@@ -1,0 +1,46 @@
+@use '@a1rth/css-normalize';
+
+:root {
+	--color-bg: #f0ede8;
+	--color-surface: #e8e4de;
+	--color-border: #d8d4ce;
+	--color-text: #2a2a2a;
+	--color-text-muted: #9a9a9a;
+	--color-accent: #4caf8a;
+	--color-accent-light: #d4ede5;
+	--color-error: #e05a5a;
+	
+	--font-mono: 'JetBrains Mono';
+	--font-sans: 'Inter';
+	
+	--radius-sm: 8px;
+	--radius-md: 12px;
+	--radius-lg: 20px;
+}
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background: var(--color-bg);
+	color: var(--color-text);
+	font-family: var(--font-sans), sans-serif;
+	font-size: 16px;
+	line-height: 1.5;
+	min-height: 100vh;
+}
+
+button {
+	cursor: pointer;
+	border: none;
+	background: none;
+	font-family: inherit;
+}
+
+a {
+	text-decoration: none;
+	color: inherit;
+}
