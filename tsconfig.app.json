@@ -19,11 +19,13 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+	  
+	  /* Alias settings */
+	  "baseUrl": ".",
+	  "paths": {
+		  "@/*": ["src/*"]
+	  }
   },
-  "include": ["src"],
-	"baseUrl": ".",
-	"paths": {
-		"@/*": ["src/*"]
-	}
+	"include": ["src"]
 }
