@@ -1,3 +1,35 @@
 .text-display {
-
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	font-family: var(--font-mono);
+	font-size: 26px;
+	line-height: 1.6;
+	max-width: 900px;
+	margin: 0 auto;
+	padding: 60px 24px;
+	
+	&__word {
+		display: inline-flex;
+		gap: 1px;
+		
+		&.active .text-display__letter--pending {
+			color: var(--color-text);
+		}
+	}
+	
+	&__letter {
+		&--pending {
+			color: var(--color-text-muted);
+		}
+		
+		&--correct {
+			color: var(--color-accent);
+		}
+		
+		&--incorrect {
+			color: var(--color-error);
+			text-decoration: underline;
+		}
+	}
 }

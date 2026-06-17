@@ -1,27 +1,35 @@
 import './TextDisplay.scss'
 import { useTypistStore } from '@/store/useTypistStore.ts'
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
+import type { Status } from '@/types'
 
 const TextDisplay = () => {
-	const [currentLetterIndex, setCurrentLetterIndex] = useState<number>(0)
-	const { currentText, currentWordIndex, nextWord, generateWords } = useTypistStore()
+	const { currentText, currentWordIndex,nextWord } = useTypistStore()
 	
-	const handleKeyPress = (event : KeyboardEvent) : void => {
-		const letter = event.key
-		if (letter.length === 1 || letter === ' ') {
-			if (currentText[currentWordIndex].length === currentLetterIndex && letter === ' ') {
-				console.log("Пробел")
+	const letterIndexRef = useRef(0)
+	const statusArrayRef = useRef<Status[]>([])
+	
+	const handleKeyPress = (event: KeyboardEvent) => {
+		console.log(
+			`Клавиша: ${event.key}`,
+			`Реф: ${letterIndexRef.current}`,
+			currentText[currentWordIndex],
+			currentText[currentWordIndex][letterIndexRef.current] ?? 'Пробел',
+		)
+		
+		if (event.key === ' ' || event.key.length === 1) {
+			if (currentText[currentWordIndex].length === letterIndexRef.current && event.key === ' ') {
 				nextWord()
-				setCurrentLetterIndex(0)
+				statusArrayRef.current = []
+				letterIndexRef.current = 0
+				return
 			}
-			if (letter === currentText[currentWordIndex][currentLetterIndex]) {
-				if (currentWordIndex + 1 === currentText.length && currentLetterIndex === currentText[currentWordIndex].length - 1) {
-					generateWords()
-					setCurrentLetterIndex(0)
-					return
-				}
-				console.log("Правильная буква")
-				setCurrentLetterIndex(currentLetterIndex + 1)
+			
+			if (currentText[currentWordIndex][letterIndexRef.current] === event.key) {
+				statusArrayRef.current[letterIndexRef.current] = 'correct'
+				letterIndexRef.current = letterIndexRef.current + 1
+			} else {
+				statusArrayRef.current[letterIndexRef.current] = 'incorrect'
 			}
 		}
 	}
@@ -32,7 +40,7 @@ const TextDisplay = () => {
 		return () => {
 			window.removeEventListener('keydown', handleKeyPress)
 		}
-	}, [currentLetterIndex, currentLetterIndex, nextWord, generateWords ])
+	}, [currentText, currentWordIndex])
 	
 	return (
 		<div
@@ -41,10 +49,14 @@ const TextDisplay = () => {
 			{currentText.map((word, index) => (
 				<span className={`text-display__word ${currentWordIndex === index ? 'active' : ''}`}
 				      key={index}
-				>{word} </span>
+				>{word.split('').map((letter, letterIndex) => (
+					<span className={`text-display__letter text-display__letter--${index === currentWordIndex ? (statusArrayRef.current[letterIndex] ?? 'pending') : 'pending'}`} key={letterIndex}>{letter}</span>
+				))} </span>
 			))}
 		</div>
 	)
 }
+
+//
 
 export default TextDisplay
