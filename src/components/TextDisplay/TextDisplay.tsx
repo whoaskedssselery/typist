@@ -5,7 +5,11 @@ import { useEffect, useRef, useState } from 'react'
 const TextDisplay = () => {
 	const [cursorIndex, setCursorIndex] = useState<number>(0)
 	
-	const { currentText, currentWordIndex, nextWord, generateWords, statusArray, setStatusByIndex, resetStatus} = useTypistStore()
+	const {
+		currentText, currentWordIndex, nextWord,
+		generateWords, statusArray, setStatusByIndex,
+		resetStatus, setCurrentLetter, setIncorrectLetter,
+	} = useTypistStore()
 	
 	const letterIndexRef = useRef(0)
 	
@@ -15,6 +19,7 @@ const TextDisplay = () => {
 				generateWords()
 				setCursorIndex(0)
 				letterIndexRef.current = 0
+				setCurrentLetter(currentText[0][0])
 				return
 			}
 			
@@ -23,6 +28,7 @@ const TextDisplay = () => {
 				resetStatus()
 				setCursorIndex(0)
 				letterIndexRef.current = 0
+				setCurrentLetter(currentText[currentWordIndex + 1][0])
 				return
 			}
 			
@@ -30,8 +36,19 @@ const TextDisplay = () => {
 				setStatusByIndex(letterIndexRef.current, 'correct')
 				letterIndexRef.current = letterIndexRef.current + 1
 				setCursorIndex(prevState => prevState + 1)
+				
+				if (letterIndexRef.current === currentText[currentWordIndex].length) {
+					setCurrentLetter(" ")
+					return
+				}
+				
+				setCurrentLetter(currentText[currentWordIndex][letterIndexRef.current])
 			} else {
 				setStatusByIndex(letterIndexRef.current, 'incorrect')
+				setIncorrectLetter(event.key)
+				setTimeout(() => {
+					setIncorrectLetter('')
+				}, 700)
 			}
 		}
 	}
@@ -44,8 +61,12 @@ const TextDisplay = () => {
 		}
 	}, [currentText, currentWordIndex])
 	
+	useEffect(() => {
+		setCurrentLetter(currentText[0][0])
+	}, [currentText])
+	
 	return (
-		<div
+		<section
 			className="text-display"
 		>
 			{currentText.map((word, index) => (
@@ -55,7 +76,7 @@ const TextDisplay = () => {
 					<span className={`text-display__letter text-display__letter--${index === currentWordIndex ? (statusArray[letterIndex] ?? 'pending') : 'pending'} ${letterIndex === cursorIndex && index === currentWordIndex ? 'text-display__letter--cursor' : ''}`} key={letterIndex}>{letter}</span>
 				))} </span>
 			))}
-		</div>
+		</section>
 	)
 }
 

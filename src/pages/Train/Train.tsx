@@ -2,6 +2,7 @@ import './Train.scss'
 import TextDisplay from '@/components/TextDisplay'
 import {useEffect} from 'react'
 import {useTypistStore} from '@/store/useTypistStore.ts'
+import Keyboard from '@/components/Keyboard'
 
 const Train = () => {
 	const { generateWords } = useTypistStore()
@@ -15,6 +16,7 @@ const Train = () => {
 			className="train"
 		>
 			<TextDisplay />
+			<Keyboard />
 		</div>
 	)
 }

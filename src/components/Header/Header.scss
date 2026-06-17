@@ -1,13 +1,13 @@
 .header {
 	display: flex;
 	align-items: center;
-	padding: 0 24px;
-	height: 52px;
+	padding: 0 32px;
+	height: 64px;
 	position: relative;
 	
 	&__logo {
 		font-family: var(--font-mono), monospace;
-		font-size: 16px;
+		font-size: 18px;
 		font-weight: 500;
 		color: var(--color-accent);
 		letter-spacing: -0.5px;
@@ -22,19 +22,19 @@
 	&__nav-menu {
 		display: flex;
 		align-items: center;
-		gap: 4px;
+		gap: 6px;
 		list-style: none;
 		background: var(--color-surface);
 		border-radius: var(--radius-lg);
-		padding: 4px;
+		padding: 6px;
 	}
 	
 	&__nav-item {
 		a {
 			display: block;
-			padding: 6px 20px;
+			padding: 8px 28px;
 			border-radius: var(--radius-md);
-			font-size: 14px;
+			font-size: 15px;
 			font-weight: 500;
 			color: var(--color-text-muted);
 			transition: all 0.2s;

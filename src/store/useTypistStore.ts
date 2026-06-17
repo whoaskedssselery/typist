@@ -9,10 +9,14 @@ type Store = {
 	errors: Record<string, number>,
 	wpm: number,
 	statusArray: Array<Status>,
+	currentLetter: string,
+	incorrectLetter: string,
 	nextWord: () => void,
 	generateWords: () => void,
 	setStatusByIndex: (index: number, status: Status) => void,
 	resetStatus: () => void,
+	setCurrentLetter: (letter: string) => void,
+	setIncorrectLetter: (letter: string) => void,
 }
 
 export const useTypistStore  = create<Store>()((set) => ({
@@ -22,6 +26,8 @@ export const useTypistStore  = create<Store>()((set) => ({
 	errors: {},
 	wpm: 0,
 	statusArray: [],
+	currentLetter: '',
+	incorrectLetter: '',
 	nextWord: () => set((state) => ({ currentWordIndex: state.currentWordIndex + 1 })),
 	generateWords: () => set((state) => {
 		const list: string[] = []
@@ -33,9 +39,7 @@ export const useTypistStore  = create<Store>()((set) => ({
 			filtered.splice(index, 1)
 		}
 		
-		state.resetStatus()
-		
-		return { currentText: list , currentWordIndex: 0 }
+		return { currentText: list , currentWordIndex: 0, statusArray: [] }
 	}),
 	setStatusByIndex: (index: number, status: Status) => set((state) => {
 		const next = [...state.statusArray]
@@ -43,5 +47,7 @@ export const useTypistStore  = create<Store>()((set) => ({
 		return { statusArray: next }
 	}),
 	resetStatus: () => set(() => ({ statusArray: [] })),
+	setCurrentLetter: (letter: string) => set(() => ({ currentLetter: letter })),
+	setIncorrectLetter: (letter: string) => set(() => ({ incorrectLetter: letter })),
 }))
 
