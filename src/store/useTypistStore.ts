@@ -1,5 +1,6 @@
 import { create } from 'zustand'
-import {russianWords} from '@/constants/words.ts'
+import { russianWords } from '@/constants/words.ts'
+import type {Status} from '@/types'
 
 type Store = {
 	unlockedLetters: string[],
@@ -7,8 +8,11 @@ type Store = {
 	currentWordIndex: number,
 	errors: Record<string, number>,
 	wpm: number,
+	statusArray: Array<Status>,
 	nextWord: () => void,
 	generateWords: () => void,
+	setStatusByIndex: (index: number, status: Status) => void,
+	resetStatus: () => void,
 }
 
 export const useTypistStore  = create<Store>()((set) => ({
@@ -17,6 +21,7 @@ export const useTypistStore  = create<Store>()((set) => ({
 	currentWordIndex: 0,
 	errors: {},
 	wpm: 0,
+	statusArray: [],
 	nextWord: () => set((state) => ({ currentWordIndex: state.currentWordIndex + 1 })),
 	generateWords: () => set((state) => {
 		const list: string[] = []
@@ -28,7 +33,15 @@ export const useTypistStore  = create<Store>()((set) => ({
 			filtered.splice(index, 1)
 		}
 		
+		state.resetStatus()
+		
 		return { currentText: list , currentWordIndex: 0 }
 	}),
+	setStatusByIndex: (index: number, status: Status) => set((state) => {
+		const next = [...state.statusArray]
+		next[index] = status
+		return { statusArray: next }
+	}),
+	resetStatus: () => set(() => ({ statusArray: [] })),
 }))
 

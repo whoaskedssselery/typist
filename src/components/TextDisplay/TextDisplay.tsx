@@ -1,35 +1,37 @@
 import './TextDisplay.scss'
 import { useTypistStore } from '@/store/useTypistStore.ts'
-import {useEffect, useRef, useState} from 'react'
-import type { Status } from '@/types'
+import { useEffect, useRef, useState } from 'react'
 
 const TextDisplay = () => {
-	const { currentText, currentWordIndex,nextWord } = useTypistStore()
+	const [cursorIndex, setCursorIndex] = useState<number>(0)
+	
+	const { currentText, currentWordIndex, nextWord, generateWords, statusArray, setStatusByIndex, resetStatus} = useTypistStore()
 	
 	const letterIndexRef = useRef(0)
-	const statusArrayRef = useRef<Status[]>([])
 	
 	const handleKeyPress = (event: KeyboardEvent) => {
-		console.log(
-			`Клавиша: ${event.key}`,
-			`Реф: ${letterIndexRef.current}`,
-			currentText[currentWordIndex],
-			currentText[currentWordIndex][letterIndexRef.current] ?? 'Пробел',
-		)
-		
 		if (event.key === ' ' || event.key.length === 1) {
+			if (currentText.length === currentWordIndex + 1 && currentText[currentWordIndex].length - 1 === letterIndexRef.current) {
+				generateWords()
+				setCursorIndex(0)
+				letterIndexRef.current = 0
+				return
+			}
+			
 			if (currentText[currentWordIndex].length === letterIndexRef.current && event.key === ' ') {
 				nextWord()
-				statusArrayRef.current = []
+				resetStatus()
+				setCursorIndex(0)
 				letterIndexRef.current = 0
 				return
 			}
 			
 			if (currentText[currentWordIndex][letterIndexRef.current] === event.key) {
-				statusArrayRef.current[letterIndexRef.current] = 'correct'
+				setStatusByIndex(letterIndexRef.current, 'correct')
 				letterIndexRef.current = letterIndexRef.current + 1
+				setCursorIndex(prevState => prevState + 1)
 			} else {
-				statusArrayRef.current[letterIndexRef.current] = 'incorrect'
+				setStatusByIndex(letterIndexRef.current, 'incorrect')
 			}
 		}
 	}
@@ -50,13 +52,11 @@ const TextDisplay = () => {
 				<span className={`text-display__word ${currentWordIndex === index ? 'active' : ''}`}
 				      key={index}
 				>{word.split('').map((letter, letterIndex) => (
-					<span className={`text-display__letter text-display__letter--${index === currentWordIndex ? (statusArrayRef.current[letterIndex] ?? 'pending') : 'pending'}`} key={letterIndex}>{letter}</span>
+					<span className={`text-display__letter text-display__letter--${index === currentWordIndex ? (statusArray[letterIndex] ?? 'pending') : 'pending'} ${letterIndex === cursorIndex && index === currentWordIndex ? 'text-display__letter--cursor' : ''}`} key={letterIndex}>{letter}</span>
 				))} </span>
 			))}
 		</div>
 	)
 }
-
-//
 
 export default TextDisplay
