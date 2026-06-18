@@ -50,4 +50,19 @@
 			}
 		}
 	}
+	
+	&__theme-button {
+		margin-left: auto;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: var(--radius-sm);
+		color: var(--color-text-muted);
+		transition: all 0.2s;
+		
+		&:hover {
+			background: var(--color-surface);
+			color: var(--color-text);
+		}
+	}
 }

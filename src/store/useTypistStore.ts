@@ -1,8 +1,11 @@
 import { create } from 'zustand'
 import { russianWords } from '@/constants/words.ts'
-import type {Status} from '@/types'
+import type { Status, Theme } from '@/types'
 
 type Store = {
+	theme: Theme,
+	correctChars: number,
+	incorrectChars: number,
 	unlockedLetters: string[],
 	currentText: string[],
 	currentWordIndex: number,
@@ -17,9 +20,14 @@ type Store = {
 	resetStatus: () => void,
 	setCurrentLetter: (letter: string) => void,
 	setIncorrectLetter: (letter: string) => void,
+	toggleTheme: () => void,
+	setWpm: (wpm: number) => void,
 }
 
 export const useTypistStore  = create<Store>()((set) => ({
+	theme: 'light',
+	correctChars: 0,
+	incorrectChars: 0,
 	unlockedLetters: ["а", "т", "и", "о", "е", "н"],
 	currentText: ['тано', 'ана', 'тонна', 'има', 'антенна', 'нота'],
 	currentWordIndex: 0,
@@ -44,10 +52,16 @@ export const useTypistStore  = create<Store>()((set) => ({
 	setStatusByIndex: (index: number, status: Status) => set((state) => {
 		const next = [...state.statusArray]
 		next[index] = status
-		return { statusArray: next }
+		return {
+			statusArray: next,
+			correctChars: status === 'correct' ? state.correctChars + 1 : state.correctChars,
+			incorrectChars: status === 'incorrect' ? state.correctChars + 1 : state.incorrectChars
+		}
 	}),
 	resetStatus: () => set(() => ({ statusArray: [] })),
 	setCurrentLetter: (letter: string) => set(() => ({ currentLetter: letter })),
 	setIncorrectLetter: (letter: string) => set(() => ({ incorrectLetter: letter })),
+	toggleTheme: () => set((state) => ({ theme:  state.theme === 'light' ? 'dark' : 'light' })),
+	setWpm: (wpm: number) => set(() => ({ wpm })),
 }))
 

@@ -1,8 +1,12 @@
+import { NavLink } from 'react-router-dom'
 import { routes } from '@/constants/routes'
+import { Sun, Moon } from 'lucide-react';
 import './Header.scss'
-import {NavLink} from 'react-router-dom'
+import { useTypistStore } from '@/store/useTypistStore.ts'
 
 const Header = () => {
+	const { theme, toggleTheme } = useTypistStore()
+
 	return (
 		<header
 			className="header"
@@ -17,6 +21,12 @@ const Header = () => {
 					))}
 				</ul>
 			</nav>
+			<button className="header__theme-button"
+			        onClick={toggleTheme}
+			        onMouseDown={(e) => e.preventDefault()}
+			>
+				{theme === 'light' ? <Sun size={24}/> : <Moon size={24}/>}
+			</button>
 		</header>
 	)
 }

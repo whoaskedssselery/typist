@@ -9,12 +9,21 @@ const TextDisplay = () => {
 		currentText, currentWordIndex, nextWord,
 		generateWords, statusArray, setStatusByIndex,
 		resetStatus, setCurrentLetter, setIncorrectLetter,
+		correctChars, setWpm
 	} = useTypistStore()
 	
 	const letterIndexRef = useRef(0)
+	const startTime = useRef<number | null>(null)
+	const correctCharsRef = useRef<number>(0)
+	const lastKeyTimeRef = useRef<number>(Date.now())
 	
 	const handleKeyPress = (event: KeyboardEvent) => {
+		if (event.key === ' ') event.preventDefault()
+		
 		if (event.key === ' ' || event.key.length === 1) {
+			if (!startTime.current) startTime.current = Date.now()
+			lastKeyTimeRef.current = Date.now()
+			
 			if (currentText.length === currentWordIndex + 1 && currentText[currentWordIndex].length - 1 === letterIndexRef.current) {
 				generateWords()
 				setCursorIndex(0)
@@ -60,7 +69,28 @@ const TextDisplay = () => {
 			window.removeEventListener('keydown', handleKeyPress)
 		}
 	}, [currentText, currentWordIndex])
-	
+	useEffect(() => {
+		correctCharsRef.current = correctChars
+	}, [correctChars])
+	useEffect(() => {
+		const interval = setInterval(() => {
+			if (startTime.current) {
+				const wpm = Math.round((correctCharsRef.current / 5) / ((Date.now() - startTime.current) / 60000))
+				setWpm(wpm)
+			}
+		}, 2000)
+		const resetInterval =  setInterval(() => {
+			if (Date.now() - lastKeyTimeRef.current > 12000) {
+				startTime.current = null
+				setWpm(0)
+			}
+		}, 1000)
+		
+		return () => {
+			clearInterval(interval)
+			clearInterval(resetInterval)
+		}
+	}, [])
 	useEffect(() => {
 		setCurrentLetter(currentText[0][0])
 	}, [currentText])

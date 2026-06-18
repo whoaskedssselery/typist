@@ -4,3 +4,4 @@ export interface Route {
 }
 
 export type Status = 'correct' | 'incorrect'
+export type Theme = 'light' | 'dark'

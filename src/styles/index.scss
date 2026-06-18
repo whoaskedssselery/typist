@@ -18,6 +18,14 @@
 	--radius-lg: 20px;
 }
 
+html {
+	scrollbar-width: none;
+	
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
 * {
 	box-sizing: border-box;
 	margin: 0;
@@ -25,11 +33,15 @@
 }
 
 body {
-	background: var(--color-bg);
-	color: var(--color-text);
 	font-family: var(--font-sans), sans-serif;
 	font-size: 16px;
 	line-height: 1.5;
+	scrollbar-width: none;
+}
+
+.app {
+	background: var(--color-bg);
+	color: var(--color-text);
 	min-height: 100vh;
 }
 
@@ -43,4 +55,14 @@ button {
 a {
 	text-decoration: none;
 	color: inherit;
+}
+
+.app--dark {
+	--color-bg: #1a1b1e;
+	--color-surface: #25262b;
+	--color-border: #373a40;
+	--color-text: #e8e8e8;
+	--color-text-muted: #6c6c6c;
+	--color-accent: #3d9b7a;
+	--color-accent-light: #1e3d33;
 }
