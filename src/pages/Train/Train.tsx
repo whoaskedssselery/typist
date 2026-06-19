@@ -1,8 +1,9 @@
 import './Train.scss'
 import TextDisplay from '@/components/TextDisplay'
 import {useEffect} from 'react'
-import {useTypistStore} from '@/store/useTypistStore.ts'
+import { useTypistStore } from '@/store/useTypistStore.ts'
 import Keyboard from '@/components/Keyboard'
+import TrainInfo from '@/components/TrainInfo'
 
 const Train = () => {
 	const { generateWords } = useTypistStore()
@@ -15,6 +16,7 @@ const Train = () => {
 		<div
 			className="train"
 		>
+			<TrainInfo />
 			<TextDisplay />
 			<Keyboard />
 		</div>

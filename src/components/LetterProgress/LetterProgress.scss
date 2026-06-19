@@ -1,0 +1,25 @@
+.letter-progress {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 3px;
+	list-style: none;
+	
+	&__key {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 30px;
+		height: 30px;
+		border-radius: 4px;
+		font-size: 15px;
+		font-weight: 500;
+		font-family: var(--font-mono), monospace;
+		background: var(--color-surface);
+		color: var(--color-text-muted);
+		
+		&--unlocked {
+			background: var(--color-accent);
+			color: white;
+		}
+	}
+}
