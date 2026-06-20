@@ -1,34 +1,9 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { russianWords } from '@/constants/words.ts'
-import type { Status, Theme } from '@/types'
-
-type Store = {
-	theme: Theme,
-	correctChars: number,
-	incorrectChars: number,
-	unlockedLetters: string[],
-	currentText: string[],
-	currentWordIndex: number,
-	errors: Record<string, number>,
-	wpm: number,
-	statusArray: Array<Status>,
-	currentLetter: string,
-	incorrectLetter: string,
-	dailyGoal: number,
-	todayMinutes: number,
-	lastSessionDate: Date | null,
-	nextWord: () => void,
-	generateWords: () => void,
-	setStatusByIndex: (index: number, status: Status) => void,
-	resetStatus: () => void,
-	setCurrentLetter: (letter: string) => void,
-	setIncorrectLetter: (letter: string) => void,
-	toggleTheme: () => void,
-	setWpm: (wpm: number) => void,
-	addMinute: () => void,
-	resetDailyGoal: () => void,
-}
+import type { Store, Status } from '@/types'
+import { letters } from '@/constants/letters.ts'
+import toast from 'react-hot-toast'
 
 export const useTypistStore  = create<Store>()(
 	persist(
@@ -37,7 +12,7 @@ export const useTypistStore  = create<Store>()(
 			correctChars: 0,
 			incorrectChars: 0,
 			unlockedLetters: ["а", "т", "и", "о", "е", "н"],
-			currentText: ['тано', 'ана', 'тонна', 'има', 'антенна', 'нота'],
+			currentText: [],
 			currentWordIndex: 0,
 			errors: {},
 			wpm: 0,
@@ -47,26 +22,54 @@ export const useTypistStore  = create<Store>()(
 			dailyGoal: 30,
 			todayMinutes: 0,
 			lastSessionDate: null,
+			targetLetterCorrect: 0,
+			targetLetterTotal: 0,
 			nextWord: () => set((state) => ({ currentWordIndex: state.currentWordIndex + 1 })),
 			generateWords: () => set((state) => {
-				const list: string[] = []
-				const filtered = russianWords.filter(word => word.split('').every(letter => state.unlockedLetters.includes(letter)))
+				let newUnlocked = state.unlockedLetters
 				
-				while (list.length < 20) {
+				if (state.targetLetterCorrect / state.targetLetterTotal >= 0.8) {
+					const newLetter = letters.find(letter => !state.unlockedLetters.includes(letter))
+					if (newLetter) {
+						newUnlocked = [...newUnlocked, newLetter]
+						toast(`Вы открыли букву ${newLetter}`)
+					}
+				}
+				
+				const allUnlocked = newUnlocked.length === letters.length
+				
+				const list: string[] = []
+				const filtered = russianWords.filter(word => word.split('').every(letter => newUnlocked.includes(letter)) && (allUnlocked || word.includes(newUnlocked[newUnlocked.length - 1])))
+				
+				while (list.length < 20 && filtered.length > 0) {
 					const index = Math.floor(Math.random() * filtered.length)
 					list.push(filtered[index])
 					filtered.splice(index, 1)
 				}
 				
-				return { currentText: list , currentWordIndex: 0, statusArray: [] }
+				return {
+					currentText: list,
+					currentWordIndex: 0,
+					statusArray: [],
+					unlockedLetters: newUnlocked,
+					targetLetterCorrect: 0,
+					targetLetterTotal: 0,
+				}
 			}),
 			setStatusByIndex: (index: number, status: Status) => set((state) => {
-				const next = [...state.statusArray]
-				next[index] = status
+				const targetLetter = state.unlockedLetters[state.unlockedLetters.length - 1]
+				const isTargetLetter = state.currentLetter === targetLetter
+				
+				const isCorrect = status === 'correct'
+				const nextStatus = [...state.statusArray]
+				nextStatus[index] = status
+				
 				return {
-					statusArray: next,
-					correctChars: status === 'correct' ? state.correctChars + 1 : state.correctChars,
-					incorrectChars: status === 'incorrect' ? state.incorrectChars + 1 : state.incorrectChars
+					statusArray: nextStatus,
+					correctChars: isCorrect ? state.correctChars + 1 : state.correctChars,
+					incorrectChars: !isCorrect ? state.incorrectChars + 1 : state.incorrectChars,
+					targetLetterTotal: isTargetLetter ? state.targetLetterTotal + 1 : state.targetLetterTotal,
+					targetLetterCorrect: isTargetLetter && isCorrect ? state.targetLetterCorrect + 1: state.targetLetterCorrect,
 				}
 			}),
 			resetStatus: () => set(() => ({ statusArray: [] })),

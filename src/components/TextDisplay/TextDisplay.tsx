@@ -9,7 +9,7 @@ const TextDisplay = () => {
 		currentText, currentWordIndex, nextWord,
 		generateWords, statusArray, setStatusByIndex,
 		resetStatus, setCurrentLetter, setIncorrectLetter,
-		correctChars, setWpm, addMinute
+		correctChars, setWpm, addMinute,
 	} = useTypistStore()
 	
 	const letterIndexRef = useRef(0)
@@ -92,7 +92,9 @@ const TextDisplay = () => {
 		}
 	}, [])
 	useEffect(() => {
-		setCurrentLetter(currentText[0][0])
+		if (currentText.length > 0) {
+			setCurrentLetter(currentText[0][0])
+		}
 	}, [currentText])
 	useEffect(() => {
 		const interval = setInterval(() => {
