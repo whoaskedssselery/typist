@@ -2,9 +2,18 @@ import Router from './router'
 import Header from '@/components/Header'
 import { useTypistStore } from '@/store/useTypistStore.ts'
 import { Toaster } from 'react-hot-toast'
+import {useEffect} from 'react'
 
 const App = () => {
-	const { theme } = useTypistStore()
+	const { textFontFamily, fontSize, theme } = useTypistStore()
+	
+	useEffect(() => {
+		document.documentElement.style.setProperty('--font-text', textFontFamily)
+	}, [textFontFamily])
+	useEffect(() => {
+		const sizes = { S: '20px', M: '26px', L: '32px' }
+		document.documentElement.style.setProperty('--font-size-text', sizes[fontSize])
+	}, [fontSize])
 	
 	return (
 		<div className={`app ${theme === 'light' ? 'app--light' : 'app--dark'}`}>
@@ -12,7 +21,7 @@ const App = () => {
 			<Router />
 			
 			<Toaster
-				position={'bottom-right'}
+				position={'top-right'}
 				toastOptions={{
 					style: {
 						background: theme === 'dark' ? '#25262b' : '#e8e4de',

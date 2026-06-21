@@ -10,6 +10,7 @@ const TextDisplay = () => {
 		generateWords, statusArray, setStatusByIndex,
 		resetStatus, setCurrentLetter, setIncorrectLetter,
 		correctChars, setWpm, addMinute,
+		lastSessionDate, resetDailyGoal
 	} = useTypistStore()
 	
 	const letterIndexRef = useRef(0)
@@ -104,6 +105,13 @@ const TextDisplay = () => {
 		}, 60000)
 		
 		return () => { clearInterval(interval) }
+	}, [])
+	useEffect(() => {
+		const today = new Date().toDateString()
+		const last = lastSessionDate ? new Date(lastSessionDate).toDateString() : null
+		if (last && last !== today) {
+			resetDailyGoal()
+		}
 	}, [])
 	
 	return (

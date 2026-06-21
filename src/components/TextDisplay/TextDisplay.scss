@@ -2,8 +2,8 @@
 	display: flex;
 	flex-wrap: wrap;
 	gap: 12px;
-	font-family: var(--font-mono), monospace ;
-	font-size: 26px;
+	font-family: var(--font-text), monospace ;
+	font-size: var(--font-size-text);
 	line-height: 1.6;
 	max-width: 1100px;
 	margin: 0 auto;

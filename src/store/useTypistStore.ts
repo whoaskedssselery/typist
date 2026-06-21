@@ -9,6 +9,8 @@ export const useTypistStore  = create<Store>()(
 	persist(
 		(set) => ({
 			theme: 'light',
+			fontSize: 'M',
+			textFontFamily: 'JetBrains Mono',
 			correctChars: 0,
 			incorrectChars: 0,
 			unlockedLetters: ["а", "т", "и", "о", "е", "н"],
@@ -32,7 +34,7 @@ export const useTypistStore  = create<Store>()(
 					const newLetter = letters.find(letter => !state.unlockedLetters.includes(letter))
 					if (newLetter) {
 						newUnlocked = [...newUnlocked, newLetter]
-						toast(`Вы открыли букву ${newLetter}`)
+						toast.success(`Вы открыли букву ${newLetter.toUpperCase()}`)
 					}
 				}
 				
@@ -88,7 +90,42 @@ export const useTypistStore  = create<Store>()(
 			}),
 			resetDailyGoal: () => set(() => ({
 				todayMinutes: 0,
-			}))
+			})),
+			resetProgress: () => set(() => {
+				toast.success('Настройки успешно сброшены')
+				
+				return {
+					theme: 'light',
+					correctChars: 0,
+					incorrectChars: 0,
+					unlockedLetters: ["а", "т", "и", "о", "е", "н"],
+					currentText: [],
+					currentWordIndex: 0,
+					errors: {},
+					wpm: 0,
+					statusArray: [],
+					currentLetter: '',
+					incorrectLetter: '',
+					dailyGoal: 30,
+					todayMinutes: 0,
+					lastSessionDate: new Date(),
+					targetLetterCorrect: 0,
+					targetLetterTotal: 0,
+				}
+			}),
+			setFontSize: (newFontSize) => set(() => {
+				toast.success(`Вы успешно поменяли размер текста на ${newFontSize}`)
+				return {
+					fontSize: newFontSize
+				}
+			}),
+			setFontFamily: (newFontFamily) => {
+				set(() => {
+					document.documentElement.style.setProperty('--font-text', newFontFamily)
+					toast.success(`Вы успешно поменяли шрифт на ${newFontFamily}`)
+					return { textFontFamily: newFontFamily }
+				})
+			},
 		}),
 		{
 			name: 'typist-store',
@@ -98,8 +135,9 @@ export const useTypistStore  = create<Store>()(
 				dailyGoal: state.dailyGoal,
 				todayMinutes: state.todayMinutes,
 				lastSessionDate: state.lastSessionDate,
+				fontSize: state.fontSize,
+				textFontFamily: state.textFontFamily,
 			})
 		}
 	)
 )
-

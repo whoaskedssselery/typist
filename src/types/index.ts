@@ -6,8 +6,13 @@ export interface Route {
 export type Status = 'correct' | 'incorrect'
 export type Theme = 'light' | 'dark'
 
+export type FontSize = 'S' | 'M' | 'L'
+export type FontFamily = 'JetBrains Mono' | 'Fira Code' | 'IBM Plex Mono' | 'Montserrat Alternates'
+
 export type Store = {
 	theme: Theme,
+	fontSize: FontSize,
+	textFontFamily: FontFamily,
 	correctChars: number,
 	incorrectChars: number,
 	unlockedLetters: string[],
@@ -33,4 +38,7 @@ export type Store = {
 	setWpm: (wpm: number) => void,
 	addMinute: () => void,
 	resetDailyGoal: () => void,
+	resetProgress: () => void,
+	setFontSize: (fontSize: FontSize) => void,
+	setFontFamily: (fontFamily: FontFamily) => void,
 }

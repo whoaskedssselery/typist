@@ -1,3 +1,118 @@
 .settings {
-
+	max-width: 680px;
+	margin: 48px auto;
+	padding: 0 24px;
+	display: flex;
+	flex-direction: column;
+	gap: 40px;
+	
+	&__section {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+	
+	&__section-title {
+		font-size: 11px;
+		font-weight: 600;
+		color: var(--color-text-muted);
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+	
+	&__font-switcher {
+		display: flex;
+		gap: 8px;
+		flex-wrap: wrap;
+	}
+	
+	&__font-button {
+		padding: 10px 20px;
+		border-radius: var(--radius-md);
+		background: var(--color-surface);
+		color: var(--color-text-muted);
+		font-size: 14px;
+		font-weight: 500;
+		transition: all 0.2s;
+		
+		&:hover {
+			color: var(--color-text);
+		}
+		
+		&--active {
+			background: var(--color-accent-light);
+			color: var(--color-accent);
+		}
+	}
+	
+	&__size-buttons {
+		display: flex;
+		gap: 8px;
+	}
+	
+	&__size-button {
+		width: 48px;
+		height: 40px;
+		border-radius: var(--radius-md);
+		background: var(--color-surface);
+		color: var(--color-text-muted);
+		font-size: 14px;
+		font-weight: 600;
+		transition: all 0.2s;
+		
+		&:hover {
+			color: var(--color-text);
+		}
+		
+		&--active {
+			background: var(--color-accent-light);
+			color: var(--color-accent);
+		}
+	}
+	
+	&__theme-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		background: var(--color-surface);
+		padding: 14px 16px;
+		border-radius: var(--radius-md);
+	}
+	
+	&__theme-label {
+		font-size: 14px;
+		color: var(--color-text);
+	}
+	
+	&__theme-button {
+		padding: 6px 14px;
+		border-radius: var(--radius-sm);
+		background: var(--color-accent-light);
+		color: var(--color-accent);
+		font-size: 13px;
+		font-weight: 500;
+		transition: all 0.2s;
+		
+		&:hover {
+			background: var(--color-accent);
+			color: white;
+		}
+	}
+	
+	&__reset-button {
+		padding: 10px 20px;
+		border-radius: var(--radius-md);
+		background: none;
+		color: var(--color-error);
+		font-size: 14px;
+		font-weight: 500;
+		border: 1px solid var(--color-error);
+		width: fit-content;
+		transition: all 0.2s;
+		
+		&:hover {
+			background: var(--color-error);
+			color: white;
+		}
+	}
 }
