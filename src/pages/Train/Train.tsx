@@ -1,15 +1,17 @@
-import './Train.scss'
+import { useEffect } from 'react'
+import useActiveStore from '@/hooks/useActiveStore.ts'
 import TextDisplay from '@/components/TextDisplay'
-import {useEffect} from 'react'
-import { useTypistStore } from '@/store/useTypistStore.ts'
 import Keyboard from '@/components/Keyboard'
 import TrainInfo from '@/components/TrainInfo'
+import './Train.scss'
 
 const Train = () => {
-	const { generateWords } = useTypistStore()
+	const { currentText, generateWords } = useActiveStore()
 	
 	useEffect(() => {
-		generateWords()
+		if (currentText.length === 0) {
+			generateWords()
+		}
 	}, [])
 	
 	return (

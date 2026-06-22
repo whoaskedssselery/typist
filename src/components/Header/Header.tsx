@@ -2,10 +2,10 @@ import { NavLink } from 'react-router-dom'
 import { routes } from '@/constants/routes'
 import { Sun, Moon } from 'lucide-react';
 import './Header.scss'
-import { useTypistStore } from '@/store/useTypistStore.ts'
+import { useSettingsStore } from '@/store/useSettingsStore.ts'
 
 const Header = () => {
-	const { theme, toggleTheme } = useTypistStore()
+	const { theme, toggleTheme } = useSettingsStore()
 
 	return (
 		<header

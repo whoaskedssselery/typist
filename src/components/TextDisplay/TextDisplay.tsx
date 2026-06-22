@@ -1,17 +1,19 @@
 import './TextDisplay.scss'
-import { useTypistStore } from '@/store/useTypistStore.ts'
+import useActiveStore from '@/hooks/useActiveStore.ts'
 import { useEffect, useRef, useState } from 'react'
+import {useSettingsStore} from '@/store/useSettingsStore.ts'
 
 const TextDisplay = () => {
 	const [cursorIndex, setCursorIndex] = useState<number>(0)
+	
+	const { addMinute, lastSessionDate, resetDailyGoal } = useSettingsStore()
 	
 	const {
 		currentText, currentWordIndex, nextWord,
 		generateWords, statusArray, setStatusByIndex,
 		resetStatus, setCurrentLetter, setIncorrectLetter,
-		correctChars, setWpm, addMinute,
-		lastSessionDate, resetDailyGoal, addWpmToList
-	} = useTypistStore()
+		correctChars, setWpm, addWpmToList
+	} = useActiveStore()
 	
 	const letterIndexRef = useRef(0)
 	const startTime = useRef<number | null>(null)

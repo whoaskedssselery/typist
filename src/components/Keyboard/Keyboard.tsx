@@ -1,9 +1,14 @@
 import './Keyboard.scss'
-import { keyboardRows } from '@/constants/keyboard.ts'
-import { useTypistStore } from '@/store/useTypistStore.ts'
+import { russianKeyboardRows } from '@/constants/russianStore/russianKeyboard.ts'
+import { englishKeyboardRows } from '@/constants/englishStore/englishKeyboard.ts'
+import useActiveStore from '@/hooks/useActiveStore.ts'
+import {useSettingsStore} from '@/store/useSettingsStore.ts'
 
 const Keyboard = () => {
-	const { currentLetter, incorrectLetter } = useTypistStore()
+	const { language } = useSettingsStore()
+	const { currentLetter, incorrectLetter } = useActiveStore()
+	
+	const keyboardRows = language === 'ru' ? russianKeyboardRows : englishKeyboardRows
 	
 	return (
 		<section

@@ -1,13 +1,12 @@
 import './TrainInfo.scss'
-import { useTypistStore } from '@/store/useTypistStore.ts'
+import useActiveStore from '@/hooks/useActiveStore.ts'
 import { useMemo } from 'react'
 import LetterProgress from '@/components/LetterProgress'
+import { useSettingsStore } from '@/store/useSettingsStore.ts'
 
 const TrainInfo = () => {
-	const {
-		wpm, correctChars, incorrectChars,
-		dailyGoal, todayMinutes
-	} = useTypistStore()
+	const { dailyGoal, todayMinutes } = useSettingsStore()
+	const { wpm, correctChars, incorrectChars } = useActiveStore()
 	
 	const accuracy = useMemo(() => {
 		const total = correctChars + incorrectChars

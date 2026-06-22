@@ -1,11 +1,11 @@
 import Router from './router'
 import Header from '@/components/Header'
-import { useTypistStore } from '@/store/useTypistStore.ts'
+import { useSettingsStore } from '@/store/useSettingsStore.ts'
 import { Toaster } from 'react-hot-toast'
-import {useEffect} from 'react'
+import { useEffect } from 'react'
 
 const App = () => {
-	const { textFontFamily, fontSize, theme } = useTypistStore()
+	const { theme, textFontFamily, fontSize } = useSettingsStore()
 	
 	useEffect(() => {
 		document.documentElement.style.setProperty('--font-text', textFontFamily)

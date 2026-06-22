@@ -1,14 +1,25 @@
-import { useTypistStore } from '@/store/useTypistStore.ts'
+import useActiveStore from '@/hooks/useActiveStore.ts'
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
 import LetterProgress from '@/components/LetterProgress'
 import './Stats.scss'
+import { useSettingsStore } from '@/store/useSettingsStore.ts'
 
 const Stats = () => {
-	const {
-		wpmList, wpmMax, sessionCounter, todayMinutes,
-		dailyGoal } = useTypistStore()
+	const { todayMinutes, dailyGoal } = useSettingsStore()
+	const { wpmList, wpmMax, sessionCounter } = useActiveStore()
 	
 	const data = wpmList.map((wpm,  index) => ({ session: index + 1, wpm }))
+	
+	const CustomTooltip = ({ active, payload }: any) => {
+		if (active && payload?.length) {
+			return (
+				<div className="stats__tooltip">
+					<span>{payload[0].value} wpm</span>
+				</div>
+			)
+		}
+		return null
+	}
 	
 	return (
 		<section
@@ -33,9 +44,12 @@ const Stats = () => {
 				>
 					<CartesianGrid stroke="#aaa" strokeDasharray="5 5" />
 					<Line type="monotone" dataKey="wpm" stroke="purple" strokeWidth={2} name="wpm" />
-					<XAxis dataKey="session" />
-					<YAxis width="auto" label={{ value: 'wpm', position: 'insideLeft', angle: -90 }} />
-					<Tooltip />
+					<XAxis
+						dataKey="session"
+						label={{ value: 'Сессия', position: 'insideBottom', offset: -5 }}
+					/>
+					<YAxis width="auto" dataKey="wpm" label={{ value: 'wpm', position: 'insideLeft', angle: -90 }} />
+					<Tooltip content={<CustomTooltip />}/>
 				</LineChart>
 			</div>
 			<div className="stats__letter-progress">

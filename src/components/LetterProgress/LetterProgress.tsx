@@ -1,11 +1,14 @@
+import { russianLetters } from '@/constants/russianStore/russianLetters.ts'
+import { englishLetters } from '@/constants/englishStore/englishLetters.ts'
+import { useSettingsStore } from '@/store/useSettingsStore.ts'
+import useActiveStore from '@/hooks/useActiveStore.ts'
 import './LetterProgress.scss'
-import { letters } from '@/constants/letters.ts'
-import {useTypistStore} from '@/store/useTypistStore.ts'
 
 const LetterProgress = () => {
-	const { unlockedLetters } = useTypistStore()
+	const { language } = useSettingsStore()
+	const { unlockedLetters } = useActiveStore()
 	
-	console.log(unlockedLetters, letters)
+	const letters = language === 'ru' ? russianLetters : englishLetters
 	
 	return (
 		<ul

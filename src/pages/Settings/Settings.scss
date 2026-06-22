@@ -20,6 +20,42 @@
 		letter-spacing: 0.5px;
 	}
 	
+	&__row {
+		display: flex;
+		gap: 16px;
+	}
+	
+	&__card {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		background: var(--color-surface);
+		padding: 14px 16px;
+		border-radius: var(--radius-md);
+		gap: 12px;
+	}
+	
+	&__card-label {
+		font-size: 14px;
+		color: var(--color-text);
+	}
+	
+	&__card-button {
+		padding: 6px 14px;
+		border-radius: var(--radius-sm);
+		background: var(--color-accent-light);
+		color: var(--color-accent);
+		font-size: 13px;
+		font-weight: 500;
+		transition: all 0.2s;
+		white-space: nowrap;
+		
+		&:hover {
+			background: var(--color-accent);
+			color: white;
+		}
+	}
+	
 	&__font-switcher {
 		display: flex;
 		gap: 8px;
@@ -35,9 +71,7 @@
 		font-weight: 500;
 		transition: all 0.2s;
 		
-		&:hover {
-			color: var(--color-text);
-		}
+		&:hover { color: var(--color-text); }
 		
 		&--active {
 			background: var(--color-accent-light);
@@ -60,9 +94,7 @@
 		font-weight: 600;
 		transition: all 0.2s;
 		
-		&:hover {
-			color: var(--color-text);
-		}
+		&:hover { color: var(--color-text); }
 		
 		&--active {
 			background: var(--color-accent-light);
@@ -70,49 +102,28 @@
 		}
 	}
 	
-	&__theme-row {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		background: var(--color-surface);
-		padding: 14px 16px;
-		border-radius: var(--radius-md);
-	}
-	
-	&__theme-label {
-		font-size: 14px;
+	&__input {
+		width: 50px;
+		padding: 4px 8px;
+		background: transparent;
 		color: var(--color-text);
-	}
-	
-	&__theme-button {
-		padding: 6px 14px;
-		border-radius: var(--radius-sm);
-		background: var(--color-accent-light);
-		color: var(--color-accent);
-		font-size: 13px;
-		font-weight: 500;
-		transition: all 0.2s;
+		border: none;
+		font-size: 14px;
+		font-family: var(--font-mono), monospace;
+		outline: none;
 		
-		&:hover {
-			background: var(--color-accent);
-			color: white;
-		}
+		&:focus { box-shadow: 0 0 0 2px var(--color-accent); border-radius: 4px; }
 	}
 	
 	&__reset-button {
-		padding: 10px 20px;
-		border-radius: var(--radius-md);
 		background: none;
 		color: var(--color-error);
 		font-size: 14px;
 		font-weight: 500;
-		border: 1px solid var(--color-error);
 		width: fit-content;
-		transition: all 0.2s;
+		transition: opacity 0.2s;
+		padding: 0;
 		
-		&:hover {
-			background: var(--color-error);
-			color: white;
-		}
+		&:hover { opacity: 0.7; }
 	}
 }
