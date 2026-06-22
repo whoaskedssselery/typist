@@ -28,6 +28,9 @@ export type Store = {
 	lastSessionDate: Date | null,
 	targetLetterCorrect: number,
 	targetLetterTotal: number,
+	wpmList: Array<number>,
+	wpmMax: number,
+	sessionCounter: number,
 	nextWord: () => void,
 	generateWords: () => void,
 	setStatusByIndex: (index: number, status: Status) => void,
@@ -41,4 +44,5 @@ export type Store = {
 	resetProgress: () => void,
 	setFontSize: (fontSize: FontSize) => void,
 	setFontFamily: (fontFamily: FontFamily) => void,
+	addWpmToList: (currentWpm: number) => void
 }

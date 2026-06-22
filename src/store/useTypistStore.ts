@@ -26,6 +26,9 @@ export const useTypistStore  = create<Store>()(
 			lastSessionDate: null,
 			targetLetterCorrect: 0,
 			targetLetterTotal: 0,
+			wpmList: [],
+			wpmMax: 0,
+			sessionCounter: 0,
 			nextWord: () => set((state) => ({ currentWordIndex: state.currentWordIndex + 1 })),
 			generateWords: () => set((state) => {
 				let newUnlocked = state.unlockedLetters
@@ -56,6 +59,8 @@ export const useTypistStore  = create<Store>()(
 					unlockedLetters: newUnlocked,
 					targetLetterCorrect: 0,
 					targetLetterTotal: 0,
+					sessionCounter: state.sessionCounter + 1,
+					wpmList: [...state.wpmList, state.wpm]
 				}
 			}),
 			setStatusByIndex: (index: number, status: Status) => set((state) => {
@@ -78,7 +83,11 @@ export const useTypistStore  = create<Store>()(
 			setCurrentLetter: (letter: string) => set(() => ({ currentLetter: letter })),
 			setIncorrectLetter: (letter: string) => set(() => ({ incorrectLetter: letter })),
 			toggleTheme: () => set((state) => ({ theme:  state.theme === 'light' ? 'dark' : 'light' })),
-			setWpm: (wpm: number) => set(() => ({ wpm })),
+			setWpm: (wpm: number) => set(() =>
+				({
+					wpm,
+				})
+			),
 			addMinute: () => set((state) => {
 				const today = new Date().toDateString()
 				const last = state.lastSessionDate?.toDateString()
@@ -126,6 +135,7 @@ export const useTypistStore  = create<Store>()(
 					return { textFontFamily: newFontFamily }
 				})
 			},
+			addWpmToList: (currentWpm: number) => set((state) => ({ wpmList: [...state.wpmList, currentWpm] })),
 		}),
 		{
 			name: 'typist-store',
@@ -137,6 +147,9 @@ export const useTypistStore  = create<Store>()(
 				lastSessionDate: state.lastSessionDate,
 				fontSize: state.fontSize,
 				textFontFamily: state.textFontFamily,
+				wpmList: state.wpmList,
+				wpmMax: state.wpmMax,
+				sessionCounter: state.sessionCounter,
 			})
 		}
 	)

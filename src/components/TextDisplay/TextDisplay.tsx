@@ -10,13 +10,14 @@ const TextDisplay = () => {
 		generateWords, statusArray, setStatusByIndex,
 		resetStatus, setCurrentLetter, setIncorrectLetter,
 		correctChars, setWpm, addMinute,
-		lastSessionDate, resetDailyGoal
+		lastSessionDate, resetDailyGoal, addWpmToList
 	} = useTypistStore()
 	
 	const letterIndexRef = useRef(0)
 	const startTime = useRef<number | null>(null)
 	const correctCharsRef = useRef<number>(0)
 	const lastKeyTimeRef = useRef<number>(Date.now())
+	const wpmRef = useRef<number>(0)
 	
 	const handleKeyPress = (event: KeyboardEvent) => {
 		if (event.key === ' ') event.preventDefault()
@@ -78,11 +79,13 @@ const TextDisplay = () => {
 			if (startTime.current) {
 				const wpm = Math.round((correctCharsRef.current / 5) / ((Date.now() - startTime.current) / 60000))
 				setWpm(wpm)
+				wpmRef.current = wpm
 			}
 		}, 2000)
 		const resetInterval =  setInterval(() => {
-			if (Date.now() - lastKeyTimeRef.current > 12000) {
+			if (Date.now() - lastKeyTimeRef.current > 20000) {
 				startTime.current = null
+				addWpmToList(wpmRef.current)
 				setWpm(0)
 			}
 		}, 1000)

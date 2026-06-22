@@ -1,3 +1,74 @@
 .stats {
-
+	max-width: 700px;
+	margin: 40px auto;
+	padding: 0 24px;
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+	
+	&__wrapper {
+		display: flex;
+		gap: 16px;
+	}
+	
+	&__wpm-best,
+	&__session-counter,
+	&__daily-progress {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		background: var(--color-surface);
+		border-radius: var(--radius-lg);
+		padding: 16px 20px;
+		font-size: 24px;
+		font-weight: 700;
+		font-family: var(--font-mono), monospace;
+		color: var(--color-accent);
+		flex: 1;
+		
+		&::before {
+			font-size: 11px;
+			font-weight: 600;
+			color: var(--color-text-muted);
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+		}
+	}
+	
+	&__wpm-best::before { content: 'Рекорд'; }
+	&__session-counter::before { content: 'Сессии'; }
+	&__daily-progress::before { content: 'Сегодня'; }
+	
+	&__chart,
+	&__letter-progress {
+		background: var(--color-surface);
+		border-radius: var(--radius-lg);
+		padding: 20px;
+	}
+	
+	&__chart {
+		&::before {
+			content: 'Динамика WPM';
+			display: block;
+			font-size: 11px;
+			font-weight: 600;
+			color: var(--color-text-muted);
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+			margin-bottom: 12px;
+		}
+	}
+	
+	&__letter-progress {
+		&::before {
+			content: 'Прогресс букв';
+			display: block;
+			font-size: 11px;
+			font-weight: 600;
+			color: var(--color-text-muted);
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+			margin-bottom: 12px;
+		}
+	}
 }
