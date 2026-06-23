@@ -1,12 +1,17 @@
-import './TextDisplay.scss'
 import useActiveStore from '@/hooks/useActiveStore.ts'
 import { useEffect, useRef, useState } from 'react'
 import {useSettingsStore} from '@/store/useSettingsStore.ts'
+import useDraggable from '@/hooks/useDraggable.ts'
+import './TextDisplay.scss'
 
 const TextDisplay = () => {
 	const [cursorIndex, setCursorIndex] = useState<number>(0)
 	
 	const { addMinute, lastSessionDate, resetDailyGoal } = useSettingsStore()
+	
+	const ref = useRef<HTMLElement>(null)
+	
+	const { position, onMouseDown, readyToDrag } = useDraggable(ref)
 	
 	const {
 		currentText, currentWordIndex, nextWord,
@@ -87,7 +92,9 @@ const TextDisplay = () => {
 		const resetInterval =  setInterval(() => {
 			if (Date.now() - lastKeyTimeRef.current > 20000) {
 				startTime.current = null
-				addWpmToList(wpmRef.current)
+				if (wpmRef.current > 0) {
+					addWpmToList(wpmRef.current)
+				}
 				setWpm(0)
 			}
 		}, 1000)
@@ -122,6 +129,9 @@ const TextDisplay = () => {
 	return (
 		<section
 			className="text-display"
+			ref={ref}
+			onMouseDown={onMouseDown}
+			style={readyToDrag ? { position: 'fixed', left: position.x, top: position.y, margin: 0 } : {}}
 		>
 			{currentText.map((word, index) => (
 				<span className={`text-display__word ${currentWordIndex === index ? 'active' : ''}`}

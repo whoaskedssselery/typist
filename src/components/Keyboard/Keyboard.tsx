@@ -1,18 +1,27 @@
-import './Keyboard.scss'
+import useActiveStore from '@/hooks/useActiveStore.ts'
+import { useSettingsStore } from '@/store/useSettingsStore.ts'
+import useDraggable from '@/hooks/useDraggable.ts'
 import { russianKeyboardRows } from '@/constants/russianStore/russianKeyboard.ts'
 import { englishKeyboardRows } from '@/constants/englishStore/englishKeyboard.ts'
-import useActiveStore from '@/hooks/useActiveStore.ts'
-import {useSettingsStore} from '@/store/useSettingsStore.ts'
+import './Keyboard.scss'
+import {useRef} from 'react'
 
 const Keyboard = () => {
 	const { language } = useSettingsStore()
 	const { currentLetter, incorrectLetter } = useActiveStore()
+	
+	const ref = useRef<HTMLElement>(null)
+	
+	const { position, onMouseDown, readyToDrag } = useDraggable(ref)
 	
 	const keyboardRows = language === 'ru' ? russianKeyboardRows : englishKeyboardRows
 	
 	return (
 		<section
 			className="keyboard"
+			ref={ref}
+			onMouseDown={onMouseDown}
+			style={readyToDrag ? { position: 'fixed', top: position.y, left: position.x, margin: 0 } : {}}
 		>
 			{keyboardRows.map((row, rowIndex) => (
 				<div className="keyboard__row" key={rowIndex}>
