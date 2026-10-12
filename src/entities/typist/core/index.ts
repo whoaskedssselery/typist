@@ -1,5 +1,6 @@
 export { DEFAULT_CONFIG, type EngineConfig } from './config'
 export { generateSet } from './generator'
+export { isForeignLayout } from './layout'
 export {
 	accuracy,
 	confidence,

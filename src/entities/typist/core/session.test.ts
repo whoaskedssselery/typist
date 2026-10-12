@@ -80,6 +80,16 @@ describe('typeChar', () => {
 	})
 })
 
+describe('cursorErrored', () => {
+	it('is set by a wrong key and cleared by the correct one', () => {
+		let state = typeChar(createSession(['ab']), 'x', 0, DEFAULT_CONFIG)
+		expect(state.cursorErrored).toBe(true)
+
+		state = typeChar(state, 'a', 100, DEFAULT_CONFIG)
+		expect(state.cursorErrored).toBe(false)
+	})
+})
+
 describe('finishing a set', () => {
 	it('does not finish when the last character is wrong', () => {
 		const state = type(createSession(['ab']), 'ax')

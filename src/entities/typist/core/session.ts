@@ -8,6 +8,7 @@ export type SessionState = {
 	wordIndex: number
 	charIndex: number
 	status: SessionStatus
+	cursorErrored: boolean
 	lastKeyAt: number | null
 	activeMs: number
 	correct: number
@@ -20,6 +21,7 @@ export const createSession = (words: string[]): SessionState => ({
 	wordIndex: 0,
 	charIndex: 0,
 	status: words.length === 0 ? 'done' : 'idle',
+	cursorErrored: false,
 	lastKeyAt: null,
 	activeMs: 0,
 	correct: 0,
@@ -51,6 +53,7 @@ export const typeChar = (
 		return {
 			...state,
 			status: 'running',
+			cursorErrored: true,
 			lastKeyAt: now,
 			activeMs,
 			errors: state.errors + 1,
@@ -70,6 +73,7 @@ export const typeChar = (
 		status: done ? 'done' : 'running',
 		wordIndex: expected === ' ' ? state.wordIndex + 1 : state.wordIndex,
 		charIndex: expected === ' ' ? 0 : state.charIndex + 1,
+		cursorErrored: false,
 		lastKeyAt: now,
 		activeMs,
 		correct: state.correct + 1,
