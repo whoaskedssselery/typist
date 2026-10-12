@@ -1,11 +1,10 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Status } from '@/entities/typist/model/types'
-import type { Store } from '@/entities/typist/model/types'
-import { russianWords } from '@/entities/typist/config/russian/russianWords.ts'
-import { russianLetters } from '@/entities/typist/config/russian/russianLetters.ts'
-import { englishWords } from '@/entities/typist/config/english/englishWords.ts'
 import { englishLetters } from '@/entities/typist/config/english/englishLetters.ts'
+import { englishWords } from '@/entities/typist/config/english/englishWords.ts'
+import { russianLetters } from '@/entities/typist/config/russian/russianLetters.ts'
+import { russianWords } from '@/entities/typist/config/russian/russianWords.ts'
+import type { Status, Store } from '@/entities/typist/model/types'
 
 type StoreConfig = {
 	name: string

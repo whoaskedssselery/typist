@@ -3,18 +3,17 @@ export interface Route {
 	path: string
 }
 
-
-export const routes : Route[] = [
+export const routes: Route[] = [
 	{
-		label: "Train",
-		path: "/"
+		label: 'Train',
+		path: '/',
 	},
 	{
-		label: "Stats",
-		path: "/stats"
+		label: 'Stats',
+		path: '/stats',
 	},
 	{
-		label: "Settings",
-		path: "/settings"
+		label: 'Settings',
+		path: '/settings',
 	},
 ]

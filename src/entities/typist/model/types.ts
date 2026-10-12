@@ -1,6 +1,5 @@
 export type Status = 'correct' | 'incorrect'
 
-
 export type Store = {
 	correctChars: number
 	incorrectChars: number

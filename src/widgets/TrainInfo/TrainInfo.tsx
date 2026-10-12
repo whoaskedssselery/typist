@@ -1,19 +1,19 @@
 import './TrainInfo.scss'
-import useActiveStore from '@/entities/typist/model/useActiveStore'
 import { useMemo } from 'react'
+import useActiveStore from '@/entities/typist/model/useActiveStore'
 import LetterProgress from '@/entities/typist/ui/LetterProgress'
 import { useSettingsStore } from '@/shared/store/useSettingsStore'
 
 const TrainInfo = () => {
 	const { dailyGoal, todayMinutes } = useSettingsStore()
 	const { wpm, correctChars, incorrectChars } = useActiveStore()
-	
+
 	const accuracy = useMemo(() => {
 		const total = correctChars + incorrectChars
 		if (total === 0) return 0
-		return Math.round(correctChars / total * 100)
+		return Math.round((correctChars / total) * 100)
 	}, [correctChars, incorrectChars])
-	
+
 	return (
 		<section className="train-info">
 			<div className="train-info__row">
@@ -33,9 +33,14 @@ const TrainInfo = () => {
 			<div className="train-info__row">
 				<span className="train-info__label">Дневная цель:</span>
 				<div className="train-info__content">
-					<span className="train-info__metric-title">{todayMinutes}/{dailyGoal} мин</span>
+					<span className="train-info__metric-title">
+						{todayMinutes}/{dailyGoal} мин
+					</span>
 					<div className="train-info__progress">
-						<div className="train-info__progress-bar" style={{ width: `${Math.min(todayMinutes / dailyGoal * 100, 100)}%` }} />
+						<div
+							className="train-info__progress-bar"
+							style={{ width: `${Math.min((todayMinutes / dailyGoal) * 100, 100)}%` }}
+						/>
 					</div>
 				</div>
 			</div>

@@ -3,7 +3,6 @@ export type Language = 'ru' | 'en'
 export type FontSize = 'S' | 'M' | 'L'
 export type FontFamily = 'JetBrains Mono' | 'Fira Code' | 'IBM Plex Mono' | 'Montserrat Alternates'
 
-
 export type SettingsStore = {
 	theme: Theme
 	language: Language

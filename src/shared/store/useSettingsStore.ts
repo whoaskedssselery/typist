@@ -13,16 +13,13 @@ export const useSettingsStore = create<SettingsStore>()(
 			todayMinutes: 0,
 			lastSessionDate: null,
 			toggleTheme: () => set((state) => ({ theme: state.theme === 'light' ? 'dark' : 'light' })),
-			toggleLanguage: () =>
-				set((state) => ({ language: state.language === 'ru' ? 'en' : 'ru' })),
+			toggleLanguage: () => set((state) => ({ language: state.language === 'ru' ? 'en' : 'ru' })),
 			setFontSize: (fontSize) => set(() => ({ fontSize })),
 			setFontFamily: (textFontFamily) => set(() => ({ textFontFamily })),
 			addMinute: () =>
 				set((state) => {
 					const today = new Date().toDateString()
-					const last = state.lastSessionDate
-						? new Date(state.lastSessionDate).toDateString()
-						: null
+					const last = state.lastSessionDate ? new Date(state.lastSessionDate).toDateString() : null
 					return {
 						todayMinutes: last !== today ? 1 : state.todayMinutes + 1,
 						lastSessionDate: new Date().toISOString(),

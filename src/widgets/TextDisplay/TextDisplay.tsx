@@ -1,8 +1,8 @@
-import useActiveStore from '@/entities/typist/model/useActiveStore'
 import { useEffect, useRef, useState } from 'react'
-import { useSettingsStore } from '@/shared/store/useSettingsStore'
-import useDraggable from '@/shared/lib/useDraggable'
 import toast from 'react-hot-toast'
+import useActiveStore from '@/entities/typist/model/useActiveStore'
+import useDraggable from '@/shared/lib/useDraggable'
+import { useSettingsStore } from '@/shared/store/useSettingsStore'
 import './TextDisplay.scss'
 
 const TextDisplay = () => {

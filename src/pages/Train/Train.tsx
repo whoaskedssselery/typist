@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 import useActiveStore from '@/entities/typist/model/useActiveStore'
 import { useSettingsStore } from '@/shared/store/useSettingsStore'
-import TextDisplay from '@/widgets/TextDisplay'
 import Keyboard from '@/widgets/Keyboard'
+import TextDisplay from '@/widgets/TextDisplay'
 import TrainInfo from '@/widgets/TrainInfo'
 import './Train.scss'
 

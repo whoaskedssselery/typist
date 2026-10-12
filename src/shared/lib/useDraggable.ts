@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
 import type { MouseEvent as ReactMouseEvent, RefObject } from 'react'
+import { useEffect, useState } from 'react'
 
 const useDraggable = (ref: RefObject<HTMLElement | null>) => {
 	const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })

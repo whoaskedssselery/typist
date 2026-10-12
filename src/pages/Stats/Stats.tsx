@@ -1,5 +1,5 @@
-import useActiveStore from '@/entities/typist/model/useActiveStore'
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts'
+import useActiveStore from '@/entities/typist/model/useActiveStore'
 import LetterProgress from '@/entities/typist/ui/LetterProgress'
 import './Stats.scss'
 import { useSettingsStore } from '@/shared/store/useSettingsStore'

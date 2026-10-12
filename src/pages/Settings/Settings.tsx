@@ -1,10 +1,15 @@
+import toast from 'react-hot-toast'
+import useActiveStore from '@/entities/typist/model/useActiveStore'
 import type { FontFamily, FontSize } from '@/shared/store/settings.types'
 import { useSettingsStore } from '@/shared/store/useSettingsStore'
-import useActiveStore from '@/entities/typist/model/useActiveStore'
-import toast from 'react-hot-toast'
 import './Settings.scss'
 
-const fonts: FontFamily[] = ['JetBrains Mono', 'Fira Code', 'IBM Plex Mono', 'Montserrat Alternates']
+const fonts: FontFamily[] = [
+	'JetBrains Mono',
+	'Fira Code',
+	'IBM Plex Mono',
+	'Montserrat Alternates',
+]
 const sizes: FontSize[] = ['S', 'M', 'L']
 
 const Settings = () => {
