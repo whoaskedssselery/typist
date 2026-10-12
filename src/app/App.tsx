@@ -1,6 +1,6 @@
-import Router from './router'
-import Header from '@/components/Header'
-import { useSettingsStore } from '@/store/useSettingsStore.ts'
+import Router from '@/app/router'
+import Header from '@/widgets/Header'
+import { useSettingsStore } from '@/shared/store/useSettingsStore'
 import { Toaster } from 'react-hot-toast'
 import { useEffect } from 'react'
 

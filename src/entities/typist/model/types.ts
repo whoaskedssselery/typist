@@ -1,4 +1,5 @@
-import type { Status } from '@/types/index.ts'
+export type Status = 'correct' | 'incorrect'
+
 
 export type Store = {
 	correctChars: number

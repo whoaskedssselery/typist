@@ -1,8 +1,8 @@
 import { NavLink } from 'react-router-dom'
-import { routes } from '@/constants/routes'
+import { routes } from '@/shared/config/routes'
 import { Sun, Moon } from 'lucide-react';
 import './Header.scss'
-import { useSettingsStore } from '@/store/useSettingsStore.ts'
+import { useSettingsStore } from '@/shared/store/useSettingsStore'
 
 const Header = () => {
 	const { theme, toggleTheme } = useSettingsStore()

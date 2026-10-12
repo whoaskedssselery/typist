@@ -1,5 +1,5 @@
-import { useSettingsStore } from '@/store/useSettingsStore.ts'
-import { useTypistStoreRu,useTypistStoreEn } from '@/store/useTypistStore.ts'
+import { useSettingsStore } from '@/shared/store/useSettingsStore'
+import { useTypistStoreRu,useTypistStoreEn } from '@/entities/typist/model/useTypistStore'
 
 const useActiveStore = () => {
 	const { language } = useSettingsStore()

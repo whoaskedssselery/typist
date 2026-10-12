@@ -1,8 +1,8 @@
-import useActiveStore from '@/hooks/useActiveStore.ts'
+import useActiveStore from '@/entities/typist/model/useActiveStore'
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts'
-import LetterProgress from '@/components/LetterProgress'
+import LetterProgress from '@/entities/typist/ui/LetterProgress'
 import './Stats.scss'
-import { useSettingsStore } from '@/store/useSettingsStore.ts'
+import { useSettingsStore } from '@/shared/store/useSettingsStore'
 
 type WpmTooltipProps = {
 	active?: boolean

@@ -1,8 +1,8 @@
 import { Route, Routes } from 'react-router-dom'
-import Train from '../pages/Train'
-import Settings from '../pages/Settings'
-import Stats from '../pages/Stats'
-import NotFound from '../pages/NotFound'
+import Train from '@/pages/Train'
+import Settings from '@/pages/Settings'
+import Stats from '@/pages/Stats'
+import NotFound from '@/pages/NotFound'
 
 const Router = () => {
 	return (

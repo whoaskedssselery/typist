@@ -1,4 +1,8 @@
-import type { Route } from '@/types'
+export interface Route {
+	label: string
+	path: string
+}
+
 
 export const routes : Route[] = [
 	{

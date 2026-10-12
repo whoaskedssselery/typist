@@ -1,8 +1,8 @@
-import useActiveStore from '@/hooks/useActiveStore.ts'
-import { useSettingsStore } from '@/store/useSettingsStore.ts'
-import useDraggable from '@/hooks/useDraggable.ts'
-import { russianKeyboardRows } from '@/constants/russianStore/russianKeyboard.ts'
-import { englishKeyboardRows } from '@/constants/englishStore/englishKeyboard.ts'
+import useActiveStore from '@/entities/typist/model/useActiveStore'
+import { useSettingsStore } from '@/shared/store/useSettingsStore'
+import useDraggable from '@/shared/lib/useDraggable'
+import { russianKeyboardRows } from '@/entities/typist/config/russian/russianKeyboard.ts'
+import { englishKeyboardRows } from '@/entities/typist/config/english/englishKeyboard.ts'
 import './Keyboard.scss'
 import {useRef} from 'react'
 

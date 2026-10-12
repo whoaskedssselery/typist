@@ -1,7 +1,7 @@
-import { russianLetters } from '@/constants/russianStore/russianLetters.ts'
-import { englishLetters } from '@/constants/englishStore/englishLetters.ts'
-import { useSettingsStore } from '@/store/useSettingsStore.ts'
-import useActiveStore from '@/hooks/useActiveStore.ts'
+import { russianLetters } from '@/entities/typist/config/russian/russianLetters.ts'
+import { englishLetters } from '@/entities/typist/config/english/englishLetters.ts'
+import { useSettingsStore } from '@/shared/store/useSettingsStore'
+import useActiveStore from '@/entities/typist/model/useActiveStore'
 import './LetterProgress.scss'
 
 const LetterProgress = () => {

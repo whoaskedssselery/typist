@@ -1,6 +1,6 @@
-import type { FontFamily, FontSize } from '@/types'
-import { useSettingsStore } from '@/store/useSettingsStore.ts'
-import useActiveStore from '@/hooks/useActiveStore.ts'
+import type { FontFamily, FontSize } from '@/shared/store/settings.types'
+import { useSettingsStore } from '@/shared/store/useSettingsStore'
+import useActiveStore from '@/entities/typist/model/useActiveStore'
 import toast from 'react-hot-toast'
 import './Settings.scss'
 

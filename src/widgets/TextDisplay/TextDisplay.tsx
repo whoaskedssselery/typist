@@ -1,7 +1,7 @@
-import useActiveStore from '@/hooks/useActiveStore.ts'
+import useActiveStore from '@/entities/typist/model/useActiveStore'
 import { useEffect, useRef, useState } from 'react'
-import { useSettingsStore } from '@/store/useSettingsStore.ts'
-import useDraggable from '@/hooks/useDraggable.ts'
+import { useSettingsStore } from '@/shared/store/useSettingsStore'
+import useDraggable from '@/shared/lib/useDraggable'
 import toast from 'react-hot-toast'
 import './TextDisplay.scss'
 

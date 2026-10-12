@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { SettingsStore } from '@/types/settings.ts'
+import type { SettingsStore } from '@/shared/store/settings.types'
 
 export const useSettingsStore = create<SettingsStore>()(
 	persist(

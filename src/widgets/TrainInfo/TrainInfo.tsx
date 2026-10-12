@@ -1,8 +1,8 @@
 import './TrainInfo.scss'
-import useActiveStore from '@/hooks/useActiveStore.ts'
+import useActiveStore from '@/entities/typist/model/useActiveStore'
 import { useMemo } from 'react'
-import LetterProgress from '@/components/LetterProgress'
-import { useSettingsStore } from '@/store/useSettingsStore.ts'
+import LetterProgress from '@/entities/typist/ui/LetterProgress'
+import { useSettingsStore } from '@/shared/store/useSettingsStore'
 
 const TrainInfo = () => {
 	const { dailyGoal, todayMinutes } = useSettingsStore()
