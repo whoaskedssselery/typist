@@ -1,11 +1,13 @@
-import { useTypistStoreEn, useTypistStoreRu } from '@/entities/typist/model/useTypistStore'
 import { useSettingsStore } from '@/shared/store/useSettingsStore'
+import type { TypistState } from './types'
+import { useTypistStoreEn, useTypistStoreRu } from './useTypistStore'
 
-const useActiveStore = () => {
-	const { language } = useSettingsStore()
-	const russianStore = useTypistStoreRu()
-	const englishStore = useTypistStoreEn()
-	return language === 'ru' ? russianStore : englishStore
+export const useActiveStore = <T>(selector: (state: TypistState) => T): T => {
+	const language = useSettingsStore((state) => state.language)
+	const russian = useTypistStoreRu(selector)
+	const english = useTypistStoreEn(selector)
+	return language === 'ru' ? russian : english
 }
 
-export default useActiveStore
+export const getActiveStore = () =>
+	useSettingsStore.getState().language === 'ru' ? useTypistStoreRu : useTypistStoreEn

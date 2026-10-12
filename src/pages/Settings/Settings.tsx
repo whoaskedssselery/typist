@@ -1,5 +1,5 @@
 import toast from 'react-hot-toast'
-import useActiveStore from '@/entities/typist/model/useActiveStore'
+import { useActiveStore } from '@/entities/typist/model/useActiveStore'
 import type { FontFamily, FontSize } from '@/shared/store/settings.types'
 import { useSettingsStore } from '@/shared/store/useSettingsStore'
 import './Settings.scss'
@@ -26,7 +26,7 @@ const Settings = () => {
 		language,
 		toggleLanguage,
 	} = useSettingsStore()
-	const { resetProgress } = useActiveStore()
+	const resetProgress = useActiveStore((state) => state.reset)
 
 	const handleFontFamily = (font: FontFamily) => {
 		setFontFamily(font)
@@ -51,6 +51,7 @@ const Settings = () => {
 				<div className="settings__font-switcher">
 					{fonts.map((font) => (
 						<button
+							type="button"
 							key={font}
 							onClick={() => handleFontFamily(font)}
 							className={`settings__font-button ${textFontFamily === font ? 'settings__font-button--active' : ''}`}
@@ -66,6 +67,7 @@ const Settings = () => {
 				<div className="settings__size-buttons">
 					{sizes.map((size) => (
 						<button
+							type="button"
 							key={size}
 							onClick={() => handleFontSize(size)}
 							className={`settings__size-button ${fontSize === size ? 'settings__size-button--active' : ''}`}
@@ -81,7 +83,7 @@ const Settings = () => {
 					<span className="settings__section-title">Тема</span>
 					<div className="settings__card">
 						<span className="settings__card-label">{theme === 'light' ? 'Светлая' : 'Тёмная'}</span>
-						<button className="settings__card-button" onClick={toggleTheme}>
+						<button type="button" className="settings__card-button" onClick={toggleTheme}>
 							Сменить
 						</button>
 					</div>
@@ -93,7 +95,7 @@ const Settings = () => {
 						<span className="settings__card-label">
 							{language === 'ru' ? 'Русский' : 'Английский'}
 						</span>
-						<button className="settings__card-button" onClick={toggleLanguage}>
+						<button type="button" className="settings__card-button" onClick={toggleLanguage}>
 							Сменить
 						</button>
 					</div>
@@ -114,7 +116,7 @@ const Settings = () => {
 				</div>
 			</div>
 
-			<button className="settings__reset-button" onClick={handleReset}>
+			<button type="button" className="settings__reset-button" onClick={handleReset}>
 				Сбросить прогресс
 			</button>
 		</section>

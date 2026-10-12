@@ -1,18 +1,13 @@
 import './TrainInfo.scss'
-import { useMemo } from 'react'
-import useActiveStore from '@/entities/typist/model/useActiveStore'
+import { selectAccuracyPercent, selectWpm } from '@/entities/typist/model/selectors'
+import { useActiveStore } from '@/entities/typist/model/useActiveStore'
 import LetterProgress from '@/entities/typist/ui/LetterProgress'
 import { useSettingsStore } from '@/shared/store/useSettingsStore'
 
 const TrainInfo = () => {
 	const { dailyGoal, todayMinutes } = useSettingsStore()
-	const { wpm, correctChars, incorrectChars } = useActiveStore()
-
-	const accuracy = useMemo(() => {
-		const total = correctChars + incorrectChars
-		if (total === 0) return 0
-		return Math.round((correctChars / total) * 100)
-	}, [correctChars, incorrectChars])
+	const wpm = useActiveStore(selectWpm)
+	const accuracy = useActiveStore(selectAccuracyPercent)
 
 	return (
 		<section className="train-info">

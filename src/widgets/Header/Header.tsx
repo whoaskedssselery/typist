@@ -24,6 +24,7 @@ const Header = () => {
 				</ul>
 			</nav>
 			<button
+				type="button"
 				className="header__theme-button"
 				onClick={toggleTheme}
 				onMouseDown={(e) => e.preventDefault()}

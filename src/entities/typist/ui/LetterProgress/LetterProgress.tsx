@@ -1,14 +1,13 @@
-import { englishLetters } from '@/entities/typist/config/english/englishLetters.ts'
-import { russianLetters } from '@/entities/typist/config/russian/russianLetters.ts'
-import useActiveStore from '@/entities/typist/model/useActiveStore'
+import { languages } from '@/entities/typist/config/languages'
+import { useActiveStore } from '@/entities/typist/model/useActiveStore'
 import { useSettingsStore } from '@/shared/store/useSettingsStore'
 import './LetterProgress.scss'
 
 const LetterProgress = () => {
-	const { language } = useSettingsStore()
-	const { unlockedLetters } = useActiveStore()
+	const language = useSettingsStore((state) => state.language)
+	const unlockedLetters = useActiveStore((state) => state.progress.unlocked)
 
-	const letters = language === 'ru' ? russianLetters : englishLetters
+	const letters = languages[language].order
 
 	return (
 		<ul className="letter-progress">

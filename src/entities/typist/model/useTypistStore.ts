@@ -1,133 +1,159 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { englishLetters } from '@/entities/typist/config/english/englishLetters.ts'
-import { englishWords } from '@/entities/typist/config/english/englishWords.ts'
-import { russianLetters } from '@/entities/typist/config/russian/russianLetters.ts'
-import { russianWords } from '@/entities/typist/config/russian/russianWords.ts'
-import type { Status, Store } from '@/entities/typist/model/types'
+import { INITIAL_LETTER_COUNT, languages } from '@/entities/typist/config/languages'
+import {
+	createSession,
+	DEFAULT_CONFIG,
+	type EngineConfig,
+	finishSet,
+	focusLetter,
+	generateSet,
+	initialProgress,
+	type Progress,
+	type Rng,
+	sessionAccuracy,
+	sessionWpm,
+	typeChar,
+} from '@/entities/typist/core'
+import type { PersistedTypist, TypistState } from './types'
 
-type StoreConfig = {
+type StoreOptions = {
 	name: string
-	initialLetters: string[]
-	letters: string[]
+	order: string[]
 	words: string[]
+	initialCount?: number
+	config?: EngineConfig
+	rng?: Rng
 }
 
-const createTypistStore = ({ name, initialLetters, letters, words }: StoreConfig) =>
-	create<Store>()(
+const WRONG_KEY_FLASH_MS = 700
+
+const isStringArray = (value: unknown): value is string[] =>
+	Array.isArray(value) && value.every((item) => typeof item === 'string')
+
+const isNumberArray = (value: unknown): value is number[] =>
+	Array.isArray(value) && value.every((item) => typeof item === 'number')
+
+export const migratePersisted = (
+	persisted: unknown,
+	version: number,
+	order: string[],
+	initialCount: number,
+): PersistedTypist => {
+	if (version >= 1) return persisted as PersistedTypist
+
+	const legacy = (persisted ?? {}) as Record<string, unknown>
+	return {
+		progress: {
+			unlocked: isStringArray(legacy.unlockedLetters)
+				? legacy.unlockedLetters
+				: order.slice(0, initialCount),
+			stats: {},
+		},
+		wpmList: isNumberArray(legacy.wpmList) ? legacy.wpmList : [],
+		wpmMax: typeof legacy.wpmMax === 'number' ? legacy.wpmMax : 0,
+		sessionCounter: typeof legacy.sessionCounter === 'number' ? legacy.sessionCounter : 0,
+	}
+}
+
+export const createTypistStore = ({
+	name,
+	order,
+	words,
+	initialCount = INITIAL_LETTER_COUNT,
+	config = DEFAULT_CONFIG,
+	rng = Math.random,
+}: StoreOptions) => {
+	let flashTimer: ReturnType<typeof setTimeout> | undefined
+
+	const newSession = (progress: Progress) =>
+		createSession(
+			generateSet({
+				words,
+				unlocked: progress.unlocked,
+				focus: focusLetter(progress, config),
+				config,
+				rng,
+			}),
+		)
+
+	const freshProgress = () => initialProgress(order, initialCount)
+
+	return create<TypistState>()(
 		persist(
-			(set) => ({
-				correctChars: 0,
-				incorrectChars: 0,
-				unlockedLetters: initialLetters,
-				currentText: [],
-				currentWordIndex: 0,
-				wpm: 0,
-				statusArray: [],
-				currentLetter: '',
-				incorrectLetter: '',
-				targetLetterCorrect: 0,
-				targetLetterTotal: 0,
+			(set, get) => ({
+				progress: freshProgress(),
 				wpmList: [],
 				wpmMax: 0,
 				sessionCounter: 0,
+				session: createSession([]),
+				lastResult: null,
 				newlyUnlockedLetter: null,
+				incorrectLetter: '',
+				lastKeyAt: null,
 
-				nextWord: () => set((state) => ({ currentWordIndex: state.currentWordIndex + 1 })),
+				start: () => {
+					if (get().session.words.length > 0) return
+					set({ session: newSession(get().progress) })
+				},
 
-				generateWords: () =>
-					set((state) => {
-						let newUnlocked = state.unlockedLetters
-						let newlyUnlockedLetter: string | null = null
+				restart: () => set({ session: newSession(get().progress), incorrectLetter: '' }),
 
-						if (
-							state.targetLetterTotal > 0 &&
-							state.targetLetterCorrect / state.targetLetterTotal >= 0.8
-						) {
-							const next = letters.find((l) => !state.unlockedLetters.includes(l))
-							if (next) {
-								newUnlocked = [...newUnlocked, next]
-								newlyUnlockedLetter = next
-							}
-						}
+				press: (key, now) => {
+					const state = get()
+					const next = typeChar(state.session, key, now, config)
+					if (next === state.session) return
 
-						const allUnlocked = newUnlocked.length === letters.length
-						const pool = words.filter(
-							(word) =>
-								word.split('').every((l) => newUnlocked.includes(l)) &&
-								(allUnlocked || word.includes(newUnlocked[newUnlocked.length - 1])),
-						)
+					const wrong = next.errors > state.session.errors
+					if (wrong) {
+						clearTimeout(flashTimer)
+						flashTimer = setTimeout(() => set({ incorrectLetter: '' }), WRONG_KEY_FLASH_MS)
+					}
+					const incorrectLetter = wrong ? key.toLowerCase() : state.incorrectLetter
 
-						const list: string[] = []
-						const available = [...pool]
-						while (list.length < 20 && available.length > 0) {
-							const index = Math.floor(Math.random() * available.length)
-							list.push(available[index])
-							available.splice(index, 1)
-						}
+					if (next.status !== 'done') {
+						set({ session: next, lastKeyAt: now, incorrectLetter })
+						return
+					}
 
-						return {
-							currentText: list,
-							currentWordIndex: 0,
-							statusArray: [],
-							unlockedLetters: newUnlocked,
-							targetLetterCorrect: 0,
-							targetLetterTotal: 0,
-							newlyUnlockedLetter,
-							sessionCounter: state.wpm > 0 ? state.sessionCounter + 1 : state.sessionCounter,
-							wpmList: state.wpm > 0 ? [...state.wpmList, state.wpm] : state.wpmList,
-							wpmMax: Math.max(state.wpmMax, state.wpm),
-						}
-					}),
+					const wpm = Math.round(sessionWpm(next))
+					const { progress, unlockedLetter } = finishSet(state.progress, next.events, order, config)
+					set({
+						progress,
+						session: newSession(progress),
+						sessionCounter: state.sessionCounter + 1,
+						wpmList: wpm > 0 ? [...state.wpmList, wpm] : state.wpmList,
+						wpmMax: Math.max(state.wpmMax, wpm),
+						lastResult: { wpm, accuracy: sessionAccuracy(next) },
+						newlyUnlockedLetter: unlockedLetter ?? state.newlyUnlockedLetter,
+						lastKeyAt: now,
+						incorrectLetter,
+					})
+				},
 
-				setStatusByIndex: (index: number, status: Status) =>
-					set((state) => {
-						const targetLetter = state.unlockedLetters[state.unlockedLetters.length - 1]
-						const isTargetLetter = state.currentLetter === targetLetter
-						const isCorrect = status === 'correct'
-						const nextStatus = [...state.statusArray]
-						nextStatus[index] = status
+				clearUnlocked: () => set({ newlyUnlockedLetter: null }),
 
-						return {
-							statusArray: nextStatus,
-							correctChars: isCorrect ? state.correctChars + 1 : state.correctChars,
-							incorrectChars: !isCorrect ? state.incorrectChars + 1 : state.incorrectChars,
-							targetLetterTotal: isTargetLetter
-								? state.targetLetterTotal + 1
-								: state.targetLetterTotal,
-							targetLetterCorrect:
-								isTargetLetter && isCorrect
-									? state.targetLetterCorrect + 1
-									: state.targetLetterCorrect,
-						}
-					}),
-
-				resetStatus: () => set(() => ({ statusArray: [] })),
-				setCurrentLetter: (letter: string) => set(() => ({ currentLetter: letter })),
-				setIncorrectLetter: (letter: string) => set(() => ({ incorrectLetter: letter })),
-				setWpm: (wpm: number) => set(() => ({ wpm })),
-				clearUnlockedNotification: () => set(() => ({ newlyUnlockedLetter: null })),
-
-				resetProgress: () =>
-					set(() => ({
-						correctChars: 0,
-						incorrectChars: 0,
-						unlockedLetters: initialLetters,
-						currentText: [],
-						currentWordIndex: 0,
-						wpm: 0,
-						statusArray: [],
-						currentLetter: '',
-						incorrectLetter: '',
-						targetLetterCorrect: 0,
-						targetLetterTotal: 0,
+				reset: () => {
+					const progress = freshProgress()
+					set({
+						progress,
+						wpmList: [],
+						wpmMax: 0,
+						sessionCounter: 0,
+						session: newSession(progress),
+						lastResult: null,
 						newlyUnlockedLetter: null,
-					})),
+						incorrectLetter: '',
+						lastKeyAt: null,
+					})
+				},
 			}),
 			{
 				name,
-				partialize: (state) => ({
-					unlockedLetters: state.unlockedLetters,
+				version: 1,
+				migrate: (persisted, version) => migratePersisted(persisted, version, order, initialCount),
+				partialize: (state): PersistedTypist => ({
+					progress: state.progress,
 					wpmList: state.wpmList,
 					wpmMax: state.wpmMax,
 					sessionCounter: state.sessionCounter,
@@ -135,17 +161,7 @@ const createTypistStore = ({ name, initialLetters, letters, words }: StoreConfig
 			},
 		),
 	)
+}
 
-export const useTypistStoreRu = createTypistStore({
-	name: 'typist-store-ru',
-	initialLetters: ['а', 'т', 'и', 'о', 'е', 'н'],
-	letters: russianLetters,
-	words: russianWords,
-})
-
-export const useTypistStoreEn = createTypistStore({
-	name: 'typist-store-en',
-	initialLetters: ['e', 'n', 'i', 'a', 'r', 'l'],
-	letters: englishLetters,
-	words: englishWords,
-})
+export const useTypistStoreRu = createTypistStore({ name: 'typist-store-ru', ...languages.ru })
+export const useTypistStoreEn = createTypistStore({ name: 'typist-store-en', ...languages.en })

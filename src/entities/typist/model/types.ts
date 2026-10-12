@@ -1,28 +1,23 @@
-export type Status = 'correct' | 'incorrect'
+import type { Progress, SessionState } from '@/entities/typist/core'
 
-export type Store = {
-	correctChars: number
-	incorrectChars: number
-	unlockedLetters: string[]
-	currentText: string[]
-	currentWordIndex: number
-	wpm: number
-	statusArray: Array<Status>
-	currentLetter: string
-	incorrectLetter: string
-	targetLetterCorrect: number
-	targetLetterTotal: number
-	wpmList: Array<number>
+export type SessionResult = { wpm: number; accuracy: number }
+
+export type PersistedTypist = {
+	progress: Progress
+	wpmList: number[]
 	wpmMax: number
 	sessionCounter: number
+}
+
+export type TypistState = PersistedTypist & {
+	session: SessionState
+	lastResult: SessionResult | null
 	newlyUnlockedLetter: string | null
-	nextWord: () => void
-	generateWords: () => void
-	setStatusByIndex: (index: number, status: Status) => void
-	resetStatus: () => void
-	setCurrentLetter: (letter: string) => void
-	setIncorrectLetter: (letter: string) => void
-	setWpm: (wpm: number) => void
-	resetProgress: () => void
-	clearUnlockedNotification: () => void
+	incorrectLetter: string
+	lastKeyAt: number | null
+	start: () => void
+	press: (key: string, now: number) => void
+	restart: () => void
+	clearUnlocked: () => void
+	reset: () => void
 }
