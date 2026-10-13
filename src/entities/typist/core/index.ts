@@ -29,3 +29,4 @@ export {
 	sessionWpm,
 	typeChar,
 } from './session'
+export { type LetterSummary, summarizeLetters } from './summary'

@@ -1,11 +1,13 @@
 import './TrainInfo.scss'
 import { selectAccuracyPercent, selectWpm } from '@/entities/typist/model/selectors'
 import { useActiveStore } from '@/entities/typist/model/useActiveStore'
+import { useTodayMinutes } from '@/entities/typist/model/useTodayMinutes'
 import LetterProgress from '@/entities/typist/ui/LetterProgress'
 import { useSettingsStore } from '@/shared/store/useSettingsStore'
 
 const TrainInfo = () => {
-	const { dailyGoal, todayMinutes } = useSettingsStore()
+	const dailyGoal = useSettingsStore((state) => state.dailyGoal)
+	const todayMinutes = useTodayMinutes()
 	const wpm = useActiveStore(selectWpm)
 	const accuracy = useActiveStore(selectAccuracyPercent)
 

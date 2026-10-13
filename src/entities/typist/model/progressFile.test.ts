@@ -51,7 +51,7 @@ describe('export and import', () => {
 
 		const result = parseImport(buildExport({ ru, en }, now))
 
-		expect(result).toEqual({ ok: true, languages: { ru, en } })
+		expect(result).toEqual({ ok: true, languages: { ru, en }, sessions: [] })
 	})
 
 	it('labels the file so it is recognisable', () => {
@@ -67,7 +67,51 @@ describe('export and import', () => {
 
 		const result = parseImport(buildExport({ ru }, now))
 
-		expect(result).toEqual({ ok: true, languages: { ru } })
+		expect(result).toEqual({ ok: true, languages: { ru }, sessions: [] })
+	})
+
+	it('round-trips the session history', () => {
+		const sessions = [
+			{
+				language: 'ru' as const,
+				finishedAt: 1_700_000_000_000,
+				durationMs: 20_000,
+				wpm: 41,
+				accuracy: 0.97,
+				correct: 80,
+				errors: 3,
+				letters: { а: { hits: 4, misses: 1, timed: 3, totalMs: 900 } },
+			},
+		]
+
+		const result = parseImport(buildExport({ ru: sample(['а']) }, now, sessions))
+
+		expect(result).toMatchObject({ ok: true, sessions })
+	})
+
+	it('rejects a file with a malformed session', () => {
+		const file = JSON.parse(buildExport({ ru: sample(['а']) }, now))
+		file.sessions = [{ language: 'ru', wpm: 'fast' }]
+
+		expect(parseImport(JSON.stringify(file))).toEqual({ ok: false, error: 'invalid-format' })
+	})
+
+	it('drops ids so imported sessions get fresh ones', () => {
+		const withId = {
+			id: 99,
+			language: 'ru' as const,
+			finishedAt: 1,
+			durationMs: 1,
+			wpm: 1,
+			accuracy: 1,
+			correct: 1,
+			errors: 0,
+			letters: {},
+		}
+
+		const result = parseImport(buildExport({ ru: sample(['а']) }, now, [withId]))
+
+		expect(result.ok && result.sessions[0]).not.toHaveProperty('id')
 	})
 
 	it('rejects text that is not JSON', () => {

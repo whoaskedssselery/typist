@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { clearSessions, saveSession } from '@/entities/typist/api/sessionsRepo'
 import { INITIAL_LETTER_COUNT, languages } from '@/entities/typist/config/languages'
 import {
 	createSession,
@@ -13,10 +14,12 @@ import {
 	type Rng,
 	sessionAccuracy,
 	sessionWpm,
+	summarizeLetters,
 	typeChar,
 } from '@/entities/typist/core'
+import { reportCorruption } from './corruption'
 import { parsePersisted } from './progressFile'
-import type { PersistedTypist, TypistState } from './types'
+import type { PersistedTypist, SetSummary, TypistState } from './types'
 
 type StoreOptions = {
 	name: string
@@ -25,6 +28,8 @@ type StoreOptions = {
 	initialCount?: number
 	config?: EngineConfig
 	rng?: Rng
+	onSetComplete?: (summary: SetSummary) => void
+	onReset?: () => void
 }
 
 const WRONG_KEY_FLASH_MS = 700
@@ -58,6 +63,7 @@ export const migratePersisted = (
 }
 
 const backUpCorrupted = (name: string, value: unknown) => {
+	reportCorruption(name)
 	try {
 		localStorage.setItem(`${name}-corrupt`, JSON.stringify(value))
 	} catch {
@@ -72,6 +78,8 @@ export const createTypistStore = ({
 	initialCount = INITIAL_LETTER_COUNT,
 	config = DEFAULT_CONFIG,
 	rng = Math.random,
+	onSetComplete,
+	onReset,
 }: StoreOptions) => {
 	let flashTimer: ReturnType<typeof setTimeout> | undefined
 
@@ -126,6 +134,15 @@ export const createTypistStore = ({
 					}
 
 					const wpm = Math.round(sessionWpm(next))
+					onSetComplete?.({
+						finishedAt: Date.now(),
+						durationMs: next.activeMs,
+						wpm,
+						accuracy: sessionAccuracy(next),
+						correct: next.correct,
+						errors: next.errors,
+						letters: summarizeLetters(next.events),
+					})
 					const { progress, unlockedLetter } = finishSet(state.progress, next.events, order, config)
 					set({
 						progress,
@@ -152,6 +169,7 @@ export const createTypistStore = ({
 					}),
 
 				reset: () => {
+					onReset?.()
 					const progress = freshProgress()
 					set({
 						progress,
@@ -187,5 +205,17 @@ export const createTypistStore = ({
 	)
 }
 
-export const useTypistStoreRu = createTypistStore({ name: 'typist-store-ru', ...languages.ru })
-export const useTypistStoreEn = createTypistStore({ name: 'typist-store-en', ...languages.en })
+const persistedStore = (language: 'ru' | 'en') =>
+	createTypistStore({
+		name: `typist-store-${language}`,
+		...languages[language],
+		onSetComplete: (summary) => {
+			void saveSession({ language, ...summary })
+		},
+		onReset: () => {
+			void clearSessions(language)
+		},
+	})
+
+export const useTypistStoreRu = persistedStore('ru')
+export const useTypistStoreEn = persistedStore('en')

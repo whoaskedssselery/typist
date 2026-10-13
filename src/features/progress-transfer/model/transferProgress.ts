@@ -1,3 +1,4 @@
+import { allSessions, replaceSessions } from '@/entities/typist/api/sessionsRepo'
 import { buildExport, type ImportError, parseImport } from '@/entities/typist/model/progressFile'
 import type { PersistedTypist, TypistState } from '@/entities/typist/model/types'
 import { useTypistStoreEn, useTypistStoreRu } from '@/entities/typist/model/useTypistStore'
@@ -13,15 +14,16 @@ const toPersisted = (state: TypistState): PersistedTypist => ({
 	sessionCounter: state.sessionCounter,
 })
 
-export const exportProgress = () =>
+export const exportProgress = async () =>
 	buildExport(
 		{ ru: toPersisted(stores.ru.getState()), en: toPersisted(stores.en.getState()) },
 		new Date(),
+		await allSessions(),
 	)
 
-export const importProgress = (
+export const importProgress = async (
 	text: string,
-): { ok: true; languages: Language[] } | { ok: false; error: ImportError } => {
+): Promise<{ ok: true; languages: Language[] } | { ok: false; error: ImportError }> => {
 	const result = parseImport(text)
 	if (!result.ok) return result
 
@@ -29,6 +31,8 @@ export const importProgress = (
 	for (const language of ['ru', 'en'] as const) {
 		const data = result.languages[language]
 		if (!data) continue
+		const history = result.sessions.filter((session) => session.language === language)
+		if (history.length > 0) await replaceSessions(language, history)
 		stores[language].getState().importData(data)
 		applied.push(language)
 	}

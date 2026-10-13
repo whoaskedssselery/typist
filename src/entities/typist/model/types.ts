@@ -1,4 +1,7 @@
+import type { SessionRecord } from '@/entities/typist/api/db'
 import type { Progress, SessionState } from '@/entities/typist/core'
+
+export type SetSummary = Omit<SessionRecord, 'id' | 'language'>
 
 export type SessionResult = { wpm: number; accuracy: number }
 

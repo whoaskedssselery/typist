@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import { languages } from '@/entities/typist/config/languages'
 import { getActiveStore, useActiveStore } from '@/entities/typist/model/useActiveStore'
-import { useDailyGoal } from '@/features/typing/model/useDailyGoal'
 import { useTypingInput } from '@/features/typing/model/useTypingInput'
 import useDraggable from '@/shared/lib/useDraggable'
 import { useSettingsStore } from '@/shared/store/useSettingsStore'
@@ -22,7 +21,6 @@ const TextDisplay = () => {
 	const ref = useRef<HTMLElement>(null)
 	const { position, onMouseDown, readyToDrag } = useDraggable(ref)
 
-	useDailyGoal()
 	useTypingInput({
 		alphabet: languages[language].order,
 		press: (key, now) => getActiveStore().getState().press(key, now),

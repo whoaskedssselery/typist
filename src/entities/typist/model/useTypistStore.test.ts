@@ -1,5 +1,6 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createRng, DEFAULT_CONFIG } from '@/entities/typist/core'
+import { takeCorruptionReports } from './corruption'
 import { createTypistStore, migratePersisted } from './useTypistStore'
 
 const order = ['a', 'b', 'c', 'd']
@@ -120,6 +121,56 @@ describe('createTypistStore', () => {
 	})
 })
 
+describe('callbacks', () => {
+	const makeObserved = () => {
+		const onSetComplete = vi.fn()
+		const onReset = vi.fn()
+		const store = createTypistStore({
+			name: `test-store-observed-${counter++}`,
+			order,
+			initialCount: 2,
+			words,
+			config,
+			rng: createRng(3),
+			onSetComplete,
+			onReset,
+		})
+		store.getState().start()
+		return { store, onSetComplete, onReset }
+	}
+
+	it('reports a finished set once with its summary', () => {
+		const { store, onSetComplete } = makeObserved()
+
+		typeWord(store, currentText(store), 0)
+
+		expect(onSetComplete).toHaveBeenCalledTimes(1)
+		const summary = onSetComplete.mock.calls[0][0]
+		expect(summary.correct).toBeGreaterThan(0)
+		expect(summary.errors).toBe(0)
+		expect(summary.accuracy).toBe(1)
+		expect(summary.durationMs).toBeGreaterThan(0)
+		expect(summary.finishedAt).toBeTypeOf('number')
+		expect(Object.keys(summary.letters).length).toBeGreaterThan(0)
+	})
+
+	it('does not report while the set is still running', () => {
+		const { store, onSetComplete } = makeObserved()
+
+		store.getState().press('a', 0)
+
+		expect(onSetComplete).not.toHaveBeenCalled()
+	})
+
+	it('reports a reset', () => {
+		const { store, onReset } = makeObserved()
+
+		store.getState().reset()
+
+		expect(onReset).toHaveBeenCalledTimes(1)
+	})
+})
+
 describe('importData', () => {
 	it('replaces progress and starts a set from the imported letters', () => {
 		const store = makeStore()
@@ -146,6 +197,7 @@ describe('corrupted storage', () => {
 		const name = 'test-store-corrupt'
 		const broken = { state: { progress: { unlocked: [] }, wpmList: 'x' }, version: 1 }
 		localStorage.setItem(name, JSON.stringify(broken))
+		takeCorruptionReports()
 
 		const store = createTypistStore({
 			name,
@@ -156,6 +208,7 @@ describe('corrupted storage', () => {
 			rng: createRng(3),
 		})
 
+		expect(takeCorruptionReports()).toEqual([name])
 		expect(store.getState().progress.unlocked).toEqual(['a', 'b'])
 		expect(store.getState().wpmList).toEqual([])
 		expect(JSON.parse(localStorage.getItem(`${name}-corrupt`) ?? 'null')).toEqual(broken.state)

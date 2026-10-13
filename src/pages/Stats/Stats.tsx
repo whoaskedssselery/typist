@@ -1,5 +1,6 @@
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts'
 import { useActiveStore } from '@/entities/typist/model/useActiveStore'
+import { useTodayMinutes } from '@/entities/typist/model/useTodayMinutes'
 import LetterProgress from '@/entities/typist/ui/LetterProgress'
 import './Stats.scss'
 import { useSettingsStore } from '@/shared/store/useSettingsStore'
@@ -21,7 +22,8 @@ const CustomTooltip = ({ active, payload }: WpmTooltipProps) => {
 }
 
 const Stats = () => {
-	const { todayMinutes, dailyGoal } = useSettingsStore()
+	const dailyGoal = useSettingsStore((state) => state.dailyGoal)
+	const todayMinutes = useTodayMinutes()
 	const wpmList = useActiveStore((state) => state.wpmList)
 	const wpmMax = useActiveStore((state) => state.wpmMax)
 	const sessionCounter = useActiveStore((state) => state.sessionCounter)

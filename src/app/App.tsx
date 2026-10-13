@@ -1,12 +1,23 @@
 import { useEffect } from 'react'
-import { Toaster } from 'react-hot-toast'
+import toast, { Toaster } from 'react-hot-toast'
 import Router from '@/app/router'
+import { takeCorruptionReports } from '@/entities/typist/model/corruption'
 import { useSettingsStore } from '@/shared/store/useSettingsStore'
 import Header from '@/widgets/Header'
 
 const App = () => {
 	const { theme, textFontFamily, fontSize } = useSettingsStore()
 
+	useEffect(() => {
+		if (takeCorruptionReports().length > 0) {
+			toast.error(
+				'Часть сохранённых данных была повреждена и сброшена. Копия лежит в localStorage.',
+				{
+					duration: 6000,
+				},
+			)
+		}
+	}, [])
 	useEffect(() => {
 		document.documentElement.style.setProperty('--font-text', textFontFamily)
 	}, [textFontFamily])

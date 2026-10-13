@@ -1,7 +1,8 @@
 import { z } from 'zod'
+import type { SessionRecord } from '@/entities/typist/api/db'
 import type { PersistedTypist } from './types'
 
-export const MAX_IMPORT_BYTES = 1_000_000
+export const MAX_IMPORT_BYTES = 20_000_000
 const FILE_FORMAT = 'typist-progress'
 const FILE_VERSION = 1
 
@@ -22,6 +23,26 @@ export const persistedSchema = z.object({
 	sessionCounter: z.number().int().nonnegative(),
 })
 
+const letterSummarySchema = z.object({
+	hits: z.number().int().nonnegative(),
+	misses: z.number().int().nonnegative(),
+	timed: z.number().int().nonnegative(),
+	totalMs: z.number().finite().nonnegative(),
+})
+
+const sessionSchema = z.object({
+	language: z.enum(['ru', 'en']),
+	finishedAt: z.number().int().nonnegative(),
+	durationMs: z.number().finite().nonnegative(),
+	wpm: z.number().finite().nonnegative(),
+	accuracy: z.number().min(0).max(1),
+	correct: z.number().int().nonnegative(),
+	errors: z.number().int().nonnegative(),
+	letters: z.record(z.string(), letterSummarySchema),
+})
+
+const sessionsSchema = z.array(sessionSchema).max(100_000)
+
 const languagesSchema = z
 	.object({ ru: persistedSchema.optional(), en: persistedSchema.optional() })
 	.refine((languages) => languages.ru !== undefined || languages.en !== undefined)
@@ -35,7 +56,9 @@ export type LanguageData = { ru?: PersistedTypist; en?: PersistedTypist }
 
 export type ImportError = 'too-large' | 'invalid-json' | 'invalid-format' | 'unsupported-version'
 
-export type ImportResult = { ok: true; languages: LanguageData } | { ok: false; error: ImportError }
+export type ImportResult =
+	| { ok: true; languages: LanguageData; sessions: SessionRecord[] }
+	| { ok: false; error: ImportError }
 
 export const parsePersisted = (
 	value: unknown,
@@ -44,9 +67,15 @@ export const parsePersisted = (
 	return result.success ? { ok: true, data: result.data } : { ok: false }
 }
 
-export const buildExport = (languages: LanguageData, now: Date) =>
+export const buildExport = (languages: LanguageData, now: Date, sessions: SessionRecord[] = []) =>
 	JSON.stringify(
-		{ format: FILE_FORMAT, version: FILE_VERSION, exportedAt: now.toISOString(), languages },
+		{
+			format: FILE_FORMAT,
+			version: FILE_VERSION,
+			exportedAt: now.toISOString(),
+			languages,
+			sessions: sessions.map(({ id: _id, ...rest }) => rest),
+		},
 		null,
 		2,
 	)
@@ -68,5 +97,8 @@ export const parseImport = (text: string): ImportResult => {
 	const languages = languagesSchema.safeParse((raw as { languages?: unknown }).languages)
 	if (!languages.success) return { ok: false, error: 'invalid-format' }
 
-	return { ok: true, languages: languages.data }
+	const sessions = sessionsSchema.safeParse((raw as { sessions?: unknown }).sessions ?? [])
+	if (!sessions.success) return { ok: false, error: 'invalid-format' }
+
+	return { ok: true, languages: languages.data, sessions: sessions.data }
 }

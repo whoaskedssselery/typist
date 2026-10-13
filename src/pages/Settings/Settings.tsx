@@ -39,14 +39,14 @@ const Settings = () => {
 
 	const fileInput = useRef<HTMLInputElement>(null)
 
-	const handleExport = () => {
-		downloadTextFile('typist-progress.json', exportProgress())
+	const handleExport = async () => {
+		downloadTextFile('typist-progress.json', await exportProgress())
 		toast.success('Прогресс сохранён в файл')
 	}
 
 	const handleImport = async (file: File | undefined) => {
 		if (!file) return
-		const result = importProgress(await file.text())
+		const result = await importProgress(await file.text())
 		if (fileInput.current) fileInput.current.value = ''
 		if (result.ok) toast.success('Прогресс загружен')
 		else toast.error(IMPORT_ERRORS[result.error])

@@ -9,14 +9,10 @@ export type SettingsStore = {
 	fontSize: FontSize
 	textFontFamily: FontFamily
 	dailyGoal: number
-	todayMinutes: number
-	lastSessionDate: string | null
 	toggleTheme: () => void
 	toggleLanguage: () => void
 	setFontSize: (fontSize: FontSize) => void
 	setFontFamily: (fontFamily: FontFamily) => void
-	addMinute: () => void
 	setDailyGoal: (dailyGoal: number) => void
-	resetDailyGoal: () => void
 	resetSettings: () => void
 }
