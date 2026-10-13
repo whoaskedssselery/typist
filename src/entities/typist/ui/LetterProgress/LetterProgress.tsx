@@ -4,7 +4,7 @@ import { useSettingsStore } from '@/shared/store/useSettingsStore'
 import './LetterProgress.scss'
 
 const LetterProgress = () => {
-	const language = useSettingsStore((state) => state.language)
+	const language = useSettingsStore((state) => state.trainingLanguage)
 	const unlockedLetters = useActiveStore((state) => state.progress.unlocked)
 
 	const letters = languages[language].order

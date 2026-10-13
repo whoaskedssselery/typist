@@ -3,17 +3,13 @@ import toast from 'react-hot-toast'
 import { languages } from '@/entities/typist/config/languages'
 import { getActiveStore, useActiveStore } from '@/entities/typist/model/useActiveStore'
 import { useTypingInput } from '@/features/typing/model/useTypingInput'
+import { t } from '@/shared/i18n/useT'
 import useDraggable from '@/shared/lib/useDraggable'
 import { useSettingsStore } from '@/shared/store/useSettingsStore'
 import './TextDisplay.scss'
 
-const LAYOUT_HINT = {
-	ru: 'Переключите раскладку на русскую',
-	en: 'Переключите раскладку на английскую',
-}
-
 const TextDisplay = () => {
-	const language = useSettingsStore((state) => state.language)
+	const language = useSettingsStore((state) => state.trainingLanguage)
 	const session = useActiveStore((state) => state.session)
 	const newlyUnlockedLetter = useActiveStore((state) => state.newlyUnlockedLetter)
 	const clearUnlocked = useActiveStore((state) => state.clearUnlocked)
@@ -25,12 +21,13 @@ const TextDisplay = () => {
 		alphabet: languages[language].order,
 		press: (key, now) => getActiveStore().getState().press(key, now),
 		restart: () => getActiveStore().getState().restart(),
-		onForeignLayout: () => toast.error(LAYOUT_HINT[language], { id: 'layout-hint' }),
+		onForeignLayout: () =>
+			toast.error(t('toasts', language === 'ru' ? 'layoutRu' : 'layoutEn'), { id: 'layout-hint' }),
 	})
 
 	useEffect(() => {
 		if (newlyUnlockedLetter) {
-			toast.success(`Открыта буква ${newlyUnlockedLetter.toUpperCase()}!`)
+			toast.success(t('toasts', 'letterUnlocked', { letter: newlyUnlockedLetter.toUpperCase() }))
 			clearUnlocked()
 		}
 	}, [newlyUnlockedLetter, clearUnlocked])

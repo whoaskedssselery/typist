@@ -3,6 +3,7 @@ import { useActiveStore } from '@/entities/typist/model/useActiveStore'
 import { useTodayMinutes } from '@/entities/typist/model/useTodayMinutes'
 import LetterProgress from '@/entities/typist/ui/LetterProgress'
 import './Stats.scss'
+import { useT } from '@/shared/i18n/useT'
 import { useSettingsStore } from '@/shared/store/useSettingsStore'
 
 type WpmTooltipProps = {
@@ -22,6 +23,7 @@ const CustomTooltip = ({ active, payload }: WpmTooltipProps) => {
 }
 
 const Stats = () => {
+	const t = useT('stats')
 	const dailyGoal = useSettingsStore((state) => state.dailyGoal)
 	const todayMinutes = useTodayMinutes()
 	const wpmList = useActiveStore((state) => state.wpmList)
@@ -36,7 +38,7 @@ const Stats = () => {
 				<span className="stats__wpm-best">{wpmMax} wpm</span>
 				<span className="stats__session-counter">{sessionCounter}</span>
 				<span className="stats__daily-progress">
-					{todayMinutes}/{dailyGoal} минут
+					{todayMinutes}/{dailyGoal} {t('minutes')}
 				</span>
 			</div>
 			<div className="stats__chart">
@@ -49,7 +51,7 @@ const Stats = () => {
 					<Line type="monotone" dataKey="wpm" stroke="purple" strokeWidth={2} name="wpm" />
 					<XAxis
 						dataKey="session"
-						label={{ value: 'Сессия', position: 'insideBottom', offset: -5 }}
+						label={{ value: t('session'), position: 'insideBottom', offset: -5 }}
 					/>
 					<YAxis dataKey="wpm" label={{ value: 'wpm', position: 'insideLeft', angle: -90 }} />
 					<Tooltip content={<CustomTooltip />} />

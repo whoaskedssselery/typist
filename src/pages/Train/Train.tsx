@@ -7,7 +7,7 @@ import TrainInfo from '@/widgets/TrainInfo'
 import './Train.scss'
 
 const Train = () => {
-	const language = useSettingsStore((state) => state.language)
+	const language = useSettingsStore((state) => state.trainingLanguage)
 	const start = useActiveStore((state) => state.start)
 
 	useEffect(() => {

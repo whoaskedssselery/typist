@@ -8,7 +8,7 @@ import './Keyboard.scss'
 import { useRef } from 'react'
 
 const Keyboard = () => {
-	const language = useSettingsStore((state) => state.language)
+	const language = useSettingsStore((state) => state.trainingLanguage)
 	const currentLetter = useActiveStore((state) => expectedChar(state.session))
 	const incorrectLetter = useActiveStore((state) => state.incorrectLetter)
 

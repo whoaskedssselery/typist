@@ -1,11 +1,13 @@
 import { Moon, Sun } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 import { routes } from '@/shared/config/routes'
+import { useT } from '@/shared/i18n/useT'
 import './Header.scss'
 import { useSettingsStore } from '@/shared/store/useSettingsStore'
 
 const Header = () => {
 	const { theme, toggleTheme } = useSettingsStore()
+	const t = useT('nav')
 
 	return (
 		<header className="header">
@@ -17,7 +19,7 @@ const Header = () => {
 					{routes.map((route) => (
 						<li className="header__nav-item" key={route.path}>
 							<NavLink to={route.path} end={route.path === '/'}>
-								{route.label}
+								{t(route.key)}
 							</NavLink>
 						</li>
 					))}

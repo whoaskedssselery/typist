@@ -5,12 +5,14 @@ export type FontFamily = 'JetBrains Mono' | 'Fira Code' | 'IBM Plex Mono' | 'Mon
 
 export type SettingsStore = {
 	theme: Theme
-	language: Language
+	uiLanguage: Language
+	trainingLanguage: Language
 	fontSize: FontSize
 	textFontFamily: FontFamily
 	dailyGoal: number
 	toggleTheme: () => void
-	toggleLanguage: () => void
+	setUiLanguage: (language: Language) => void
+	setTrainingLanguage: (language: Language) => void
 	setFontSize: (fontSize: FontSize) => void
 	setFontFamily: (fontFamily: FontFamily) => void
 	setDailyGoal: (dailyGoal: number) => void

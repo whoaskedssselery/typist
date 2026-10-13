@@ -2,8 +2,9 @@ import { useRef } from 'react'
 import toast from 'react-hot-toast'
 import { useActiveStore } from '@/entities/typist/model/useActiveStore'
 import { exportProgress, importProgress } from '@/features/progress-transfer/model/transferProgress'
+import { useT } from '@/shared/i18n/useT'
 import { downloadTextFile } from '@/shared/lib/files'
-import type { FontFamily, FontSize } from '@/shared/store/settings.types'
+import type { FontFamily, FontSize, Language } from '@/shared/store/settings.types'
 import { useSettingsStore } from '@/shared/store/useSettingsStore'
 import './Settings.scss'
 
@@ -13,13 +14,16 @@ const fonts: FontFamily[] = [
 	'IBM Plex Mono',
 	'Montserrat Alternates',
 ]
-const IMPORT_ERRORS = {
-	'too-large': 'Файл слишком большой',
-	'invalid-json': 'Это не JSON-файл',
-	'invalid-format': 'Файл не похож на прогресс Typist',
-	'unsupported-version': 'Файл создан более новой версией Typist',
-}
 const sizes: FontSize[] = ['S', 'M', 'L']
+const languageNames: Record<Language, string> = { ru: 'Русский', en: 'English' }
+const otherLanguage = (language: Language): Language => (language === 'ru' ? 'en' : 'ru')
+
+const IMPORT_ERROR_KEYS = {
+	'too-large': 'importTooLarge',
+	'invalid-json': 'importInvalidJson',
+	'invalid-format': 'importInvalidFormat',
+	'unsupported-version': 'importUnsupportedVersion',
+} as const
 
 const Settings = () => {
 	const {
@@ -32,46 +36,50 @@ const Settings = () => {
 		dailyGoal,
 		setDailyGoal,
 		resetSettings,
-		language,
-		toggleLanguage,
+		uiLanguage,
+		setUiLanguage,
+		trainingLanguage,
+		setTrainingLanguage,
 	} = useSettingsStore()
 	const resetProgress = useActiveStore((state) => state.reset)
+	const t = useT('settings')
+	const tToast = useT('toasts')
 
 	const fileInput = useRef<HTMLInputElement>(null)
 
 	const handleExport = async () => {
 		downloadTextFile('typist-progress.json', await exportProgress())
-		toast.success('Прогресс сохранён в файл')
+		toast.success(tToast('progressExported'))
 	}
 
 	const handleImport = async (file: File | undefined) => {
 		if (!file) return
 		const result = await importProgress(await file.text())
 		if (fileInput.current) fileInput.current.value = ''
-		if (result.ok) toast.success('Прогресс загружен')
-		else toast.error(IMPORT_ERRORS[result.error])
+		if (result.ok) toast.success(tToast('progressImported'))
+		else toast.error(tToast(IMPORT_ERROR_KEYS[result.error]))
 	}
 
 	const handleFontFamily = (font: FontFamily) => {
 		setFontFamily(font)
-		toast.success(`Шрифт изменён на ${font}`)
+		toast.success(tToast('fontChanged', { font }))
 	}
 
 	const handleFontSize = (size: FontSize) => {
 		setFontSize(size)
-		toast.success(`Размер текста изменён на ${size}`)
+		toast.success(tToast('sizeChanged', { size }))
 	}
 
 	const handleReset = () => {
 		resetProgress()
 		resetSettings()
-		toast.success('Прогресс сброшен')
+		toast.success(tToast('progressReset'))
 	}
 
 	return (
 		<section className="settings">
 			<div className="settings__section">
-				<span className="settings__section-title">Шрифт</span>
+				<span className="settings__section-title">{t('font')}</span>
 				<div className="settings__font-switcher">
 					{fonts.map((font) => (
 						<button
@@ -87,7 +95,7 @@ const Settings = () => {
 			</div>
 
 			<div className="settings__section">
-				<span className="settings__section-title">Размер текста</span>
+				<span className="settings__section-title">{t('textSize')}</span>
 				<div className="settings__size-buttons">
 					{sizes.map((size) => (
 						<button
@@ -104,29 +112,47 @@ const Settings = () => {
 
 			<div className="settings__row">
 				<div className="settings__section">
-					<span className="settings__section-title">Тема</span>
-					<div className="settings__card">
-						<span className="settings__card-label">{theme === 'light' ? 'Светлая' : 'Тёмная'}</span>
-						<button type="button" className="settings__card-button" onClick={toggleTheme}>
-							Сменить
-						</button>
-					</div>
-				</div>
-
-				<div className="settings__section">
-					<span className="settings__section-title">Язык</span>
+					<span className="settings__section-title">{t('theme')}</span>
 					<div className="settings__card">
 						<span className="settings__card-label">
-							{language === 'ru' ? 'Русский' : 'Английский'}
+							{theme === 'light' ? t('themeLight') : t('themeDark')}
 						</span>
-						<button type="button" className="settings__card-button" onClick={toggleLanguage}>
-							Сменить
+						<button type="button" className="settings__card-button" onClick={toggleTheme}>
+							{t('change')}
 						</button>
 					</div>
 				</div>
 
 				<div className="settings__section">
-					<span className="settings__section-title">Дневная цель</span>
+					<span className="settings__section-title">{t('interfaceLanguage')}</span>
+					<div className="settings__card">
+						<span className="settings__card-label">{languageNames[uiLanguage]}</span>
+						<button
+							type="button"
+							className="settings__card-button"
+							onClick={() => setUiLanguage(otherLanguage(uiLanguage))}
+						>
+							{t('change')}
+						</button>
+					</div>
+				</div>
+
+				<div className="settings__section">
+					<span className="settings__section-title">{t('trainingLanguage')}</span>
+					<div className="settings__card">
+						<span className="settings__card-label">{languageNames[trainingLanguage]}</span>
+						<button
+							type="button"
+							className="settings__card-button"
+							onClick={() => setTrainingLanguage(otherLanguage(trainingLanguage))}
+						>
+							{t('change')}
+						</button>
+					</div>
+				</div>
+
+				<div className="settings__section">
+					<span className="settings__section-title">{t('dailyGoal')}</span>
 					<div className="settings__card">
 						<input
 							className="settings__input"
@@ -135,23 +161,23 @@ const Settings = () => {
 							value={dailyGoal}
 							onChange={(e) => setDailyGoal(Math.max(1, Number(e.target.value)))}
 						/>
-						<span className="settings__card-label">минут</span>
+						<span className="settings__card-label">{t('minutes')}</span>
 					</div>
 				</div>
 			</div>
 
 			<div className="settings__section">
-				<span className="settings__section-title">Прогресс</span>
+				<span className="settings__section-title">{t('progress')}</span>
 				<div className="settings__card">
 					<button type="button" className="settings__card-button" onClick={handleExport}>
-						Экспорт
+						{t('export')}
 					</button>
 					<button
 						type="button"
 						className="settings__card-button"
 						onClick={() => fileInput.current?.click()}
 					>
-						Импорт
+						{t('import')}
 					</button>
 					<input
 						ref={fileInput}
@@ -164,7 +190,7 @@ const Settings = () => {
 			</div>
 
 			<button type="button" className="settings__reset-button" onClick={handleReset}>
-				Сбросить прогресс
+				{t('reset')}
 			</button>
 		</section>
 	)

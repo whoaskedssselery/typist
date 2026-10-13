@@ -1,19 +1,12 @@
+import type { TranslationKey } from '@/shared/i18n/translate'
+
 export interface Route {
-	label: string
+	key: TranslationKey<'nav'>
 	path: string
 }
 
 export const routes: Route[] = [
-	{
-		label: 'Train',
-		path: '/',
-	},
-	{
-		label: 'Stats',
-		path: '/stats',
-	},
-	{
-		label: 'Settings',
-		path: '/settings',
-	},
+	{ key: 'train', path: '/' },
+	{ key: 'stats', path: '/stats' },
+	{ key: 'settings', path: '/settings' },
 ]
