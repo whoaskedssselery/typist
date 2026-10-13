@@ -15,6 +15,7 @@ import {
 	sessionWpm,
 	typeChar,
 } from '@/entities/typist/core'
+import { parsePersisted } from './progressFile'
 import type { PersistedTypist, TypistState } from './types'
 
 type StoreOptions = {
@@ -53,6 +54,14 @@ export const migratePersisted = (
 		wpmList: isNumberArray(legacy.wpmList) ? legacy.wpmList : [],
 		wpmMax: typeof legacy.wpmMax === 'number' ? legacy.wpmMax : 0,
 		sessionCounter: typeof legacy.sessionCounter === 'number' ? legacy.sessionCounter : 0,
+	}
+}
+
+const backUpCorrupted = (name: string, value: unknown) => {
+	try {
+		localStorage.setItem(`${name}-corrupt`, JSON.stringify(value))
+	} catch {
+		// storage is full or blocked, nothing else to do
 	}
 }
 
@@ -133,6 +142,15 @@ export const createTypistStore = ({
 
 				clearUnlocked: () => set({ newlyUnlockedLetter: null }),
 
+				importData: (data) =>
+					set({
+						...data,
+						session: newSession(data.progress),
+						lastResult: null,
+						newlyUnlockedLetter: null,
+						incorrectLetter: '',
+					}),
+
 				reset: () => {
 					const progress = freshProgress()
 					set({
@@ -152,6 +170,12 @@ export const createTypistStore = ({
 				name,
 				version: 1,
 				migrate: (persisted, version) => migratePersisted(persisted, version, order, initialCount),
+				merge: (persisted, current) => {
+					const parsed = parsePersisted(persisted)
+					if (parsed.ok) return { ...current, ...parsed.data }
+					backUpCorrupted(name, persisted)
+					return current
+				},
 				partialize: (state): PersistedTypist => ({
 					progress: state.progress,
 					wpmList: state.wpmList,

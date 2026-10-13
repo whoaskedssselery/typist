@@ -19,5 +19,6 @@ export type TypistState = PersistedTypist & {
 	press: (key: string, now: number) => void
 	restart: () => void
 	clearUnlocked: () => void
+	importData: (data: PersistedTypist) => void
 	reset: () => void
 }

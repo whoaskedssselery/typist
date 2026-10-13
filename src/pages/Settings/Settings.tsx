@@ -1,5 +1,8 @@
+import { useRef } from 'react'
 import toast from 'react-hot-toast'
 import { useActiveStore } from '@/entities/typist/model/useActiveStore'
+import { exportProgress, importProgress } from '@/features/progress-transfer/model/transferProgress'
+import { downloadTextFile } from '@/shared/lib/files'
 import type { FontFamily, FontSize } from '@/shared/store/settings.types'
 import { useSettingsStore } from '@/shared/store/useSettingsStore'
 import './Settings.scss'
@@ -10,6 +13,12 @@ const fonts: FontFamily[] = [
 	'IBM Plex Mono',
 	'Montserrat Alternates',
 ]
+const IMPORT_ERRORS = {
+	'too-large': 'Файл слишком большой',
+	'invalid-json': 'Это не JSON-файл',
+	'invalid-format': 'Файл не похож на прогресс Typist',
+	'unsupported-version': 'Файл создан более новой версией Typist',
+}
 const sizes: FontSize[] = ['S', 'M', 'L']
 
 const Settings = () => {
@@ -27,6 +36,21 @@ const Settings = () => {
 		toggleLanguage,
 	} = useSettingsStore()
 	const resetProgress = useActiveStore((state) => state.reset)
+
+	const fileInput = useRef<HTMLInputElement>(null)
+
+	const handleExport = () => {
+		downloadTextFile('typist-progress.json', exportProgress())
+		toast.success('Прогресс сохранён в файл')
+	}
+
+	const handleImport = async (file: File | undefined) => {
+		if (!file) return
+		const result = importProgress(await file.text())
+		if (fileInput.current) fileInput.current.value = ''
+		if (result.ok) toast.success('Прогресс загружен')
+		else toast.error(IMPORT_ERRORS[result.error])
+	}
 
 	const handleFontFamily = (font: FontFamily) => {
 		setFontFamily(font)
@@ -113,6 +137,29 @@ const Settings = () => {
 						/>
 						<span className="settings__card-label">минут</span>
 					</div>
+				</div>
+			</div>
+
+			<div className="settings__section">
+				<span className="settings__section-title">Прогресс</span>
+				<div className="settings__card">
+					<button type="button" className="settings__card-button" onClick={handleExport}>
+						Экспорт
+					</button>
+					<button
+						type="button"
+						className="settings__card-button"
+						onClick={() => fileInput.current?.click()}
+					>
+						Импорт
+					</button>
+					<input
+						ref={fileInput}
+						type="file"
+						accept="application/json,.json"
+						hidden
+						onChange={(event) => handleImport(event.target.files?.[0])}
+					/>
 				</div>
 			</div>
 
